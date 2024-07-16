@@ -1,5 +1,10 @@
 const express = require('express');
+//const sequelize = require('../config/dbConfig1');
+const sequelize = require('../config/dbConfig2');
+const authRoutes = require('../routes/authRoutes');
+
 const app = express();
+const PORT = 3000;
 
 app.use(express.json());
 
