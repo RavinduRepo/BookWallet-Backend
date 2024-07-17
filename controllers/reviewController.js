@@ -43,7 +43,6 @@ const getReviews = async (req, res) => {
         if (reviewDetails.length === 0) {
             return res.status(404).json({ message: 'No reviews found' });
         }
-
         res.status(200).json({ reviewDetails });
     } catch (error) {
         console.error('Error fetching review details:', error);
