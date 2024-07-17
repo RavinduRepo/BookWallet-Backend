@@ -18,7 +18,7 @@ const getUserDetails = async (req, res) => {
   const userId = parseInt(req.params.id);
 
   try {
-    console.log("calling .getuser");
+    // console.log("calling .getuser");
     const [rows] = await db.execute("SELECT * FROM user WHERE user_id = ?", [
       userId,
     ]);
@@ -33,4 +33,32 @@ const getUserDetails = async (req, res) => {
   }
 };
 
-module.exports = { createUser, findUserByEmail, getUserDetails };
+const updateUsername = (userId, username) => {
+  return db.query("UPDATE user SET username = ? WHERE user_id = ?", [
+    username,
+    userId,
+  ]);
+};
+
+const updateEmail = (userId, email) => {
+  return db.query("UPDATE user SET email = ? WHERE user_id = ?", [
+    email,
+    userId,
+  ]);
+};
+
+const updatePassword = (userId, password) => {
+  return db.query("UPDATE user SET password = ? WHERE user_id = ?", [
+    password,
+    userId,
+  ]);
+};
+
+module.exports = {
+  createUser,
+  findUserByEmail,
+  getUserDetails,
+  updateUsername,
+  updateEmail,
+  updatePassword,
+};
