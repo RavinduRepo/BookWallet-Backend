@@ -28,9 +28,10 @@ const googleAPISearch = async (req, res) => {
                 title: book.volumeInfo.title,
                 author: book.volumeInfo.authors.join(', '), // Join authors into a string
                 pages: book.volumeInfo.pageCount,
-                genre: book.volumeInfo.categories,
+                genre: book.volumeInfo.categories.join(', '),
                 totalRating: '--', // change to actual rating
-                imageUrl: book.volumeInfo.imageLinks.thumbnail
+                imageUrl: book.volumeInfo.imageLinks.thumbnail,
+                description: book.volumeInfo.description
     
             });
         });

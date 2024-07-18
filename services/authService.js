@@ -23,8 +23,9 @@ const signUp = async (username, email, password) => {
 
 const signIn = async (email, password) => {
     const user = await findUserByEmail(email);
-
     if (!user || !await bcrypt.compare(password, user.password)) {
+    console.log("logint", await bcrypt.hash(password, 10),user.password);
+        
         throw new Error('Invalid email or password');
     }
 
