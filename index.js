@@ -5,9 +5,8 @@ const postRoutes = require('./routes/postRoutes');
 const imageRoutes = require('./routes/imageRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const googleAPIRoutes = require('./routes/googleapiRoutes');
-
+require('dotenv').config();
 const db = require('./config/dbConfig');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 

@@ -24,13 +24,20 @@ const signUp = async (username, email, password) => {
 const signIn = async (email, password) => {
     const user = await findUserByEmail(email);
     if (!user || !await bcrypt.compare(password, user.password)) {
-    console.log("logint", await bcrypt.hash(password, 10),user.password);
-        
         throw new Error('Invalid email or password');
     }
-
-    const token = jwt.sign({ id: user.id, email: user.email }, 'your_secret_key', { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.user_id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1d' });
     return token;
 };
 
-module.exports = { signUp, signIn };
+const verifyToken = (token, res) => {
+  console.log("calling tolken verify");
+  
+    jwt.verify(token, process.env.JWT_SECRET, (err,decoded) => {
+      if (err) return res.status(401).send('Invalid token');
+      // console.log(decoded);
+      res.status(200).send('Token valid');
+    });
+  };
+
+module.exports = { signUp, signIn , verifyToken };
