@@ -19,9 +19,8 @@ const getUserDetails = async (req, res) => {
 
   try {
     // console.log("calling .getuser");
-    const [rows] = await db.execute("SELECT * FROM user WHERE user_id = ?", [
-      userId,
-    ]);
+    const sql = "SELECT * FROM user WHERE user_id = ?";
+    const [rows] = await db.execute(sql, [userId]);
 
     if (rows.length > 0) {
       res.json(rows[0]);
@@ -33,25 +32,66 @@ const getUserDetails = async (req, res) => {
   }
 };
 
-const updateUsername = (userId, username) => {
-  return db.query("UPDATE user SET username = ? WHERE user_id = ?", [
-    username,
-    userId,
-  ]);
+const updateUsername = async (req, res) => {
+  const userId = req.params.id;
+  const username = req.body.username;
+
+  try {
+    const sql = "UPDATE user SET username = ? WHERE user_id = ?";
+    const [result] = await db.execute(sql, [username, userId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Username updated successfully" });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
 };
 
-const updateEmail = (userId, email) => {
-  return db.query("UPDATE user SET email = ? WHERE user_id = ?", [
-    email,
-    userId,
-  ]);
+const updateEmail = async (req, res) => {
+  const userId = req.params.id;
+  const email = req.body.email;
+
+  try {
+    const sql = "UPDATE user SET email = ? WHERE user_id = ?";
+    const [result] = await db.execute(sql, [email, userId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Email updated successfully" });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
 };
 
-const updatePassword = (userId, password) => {
-  return db.query("UPDATE user SET password = ? WHERE user_id = ?", [
-    password,
-    userId,
-  ]);
+const updatePassword = async (req, res) => {
+  const userId = req.params.id;
+  const password = req.body.password;
+
+  try {
+    const sql = "UPDATE user SET password = ? WHERE user_id = ?";
+    const [result] = await db.execute(sql, [password, userId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "Email updated successfully" });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
+const updateAllDetails = async (username, email, password, userId) => {
+  const sql = "UPDATE user SET username = ?, email = ?, password = ? WHERE user_id = ?";
+  await db.execute(sql, [username, email, password, userId]);
 };
 
 module.exports = {
@@ -61,4 +101,29 @@ module.exports = {
   updateUsername,
   updateEmail,
   updatePassword,
+  updateAllDetails
 };
+
+
+
+
+// const updateUsername = (userId, username) => {
+//   return db.query("UPDATE user SET username = ? WHERE user_id = ?", [
+//     username,
+//     userId,
+//   ]);
+// };
+
+// const updateEmail = (userId, email) => {
+//   return db.query("UPDATE user SET email = ? WHERE user_id = ?", [
+//     email,
+//     userId,
+//   ]);
+// };
+
+// const updatePassword = (userId, password) => {
+//   return db.query("UPDATE user SET password = ? WHERE user_id = ?", [
+//     password,
+//     userId,
+//   ]);
+// };

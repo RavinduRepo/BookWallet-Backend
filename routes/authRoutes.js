@@ -6,4 +6,8 @@ const authController = require('../controllers/authController');
 router.post('/signup', authController.signUp);
 router.post('/signin', authController.signIn);
 router.get('/signup/protected', authController.checkToken);
+
+// Update all details
+router.put("/updatealldetails/:id", authController.verifyUpdateDetails);
+
 module.exports = router;

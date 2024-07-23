@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { createUser, findUserByEmail } = require('../controllers/userController');
-const { signupDetailsSchema } = require('../middlewares/authMiddleware');
+const { createUser, findUserByEmail, updateAllDetails } = require('../controllers/userController');
+const { signupDetailsSchema, updateDetailsSchema } = require('../middlewares/authMiddleware');
 
 const signUp = async (username, email, password) => {
     // Combine the parameters into an object
@@ -38,6 +38,24 @@ const verifyToken = (token, res) => {
       // console.log(decoded);
       res.status(200).send('Token valid');
     });
-  };
+};
 
-module.exports = { signUp, signIn , verifyToken };
+const verifyUpdateDetails = async (username, email, password, userId) => {
+  // Combine the parameters into an object
+  const userDetails = { username, email, password };
+
+  // Validate the request body against the schema
+  const { error } = updateDetailsSchema.validate(userDetails);
+  if (error) {
+      console.log("invalid");
+      // If validation fails, send a 400 status code and the validation error message
+      throw new Error('Invalid email or password');
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  await updateAllDetails(username, email, hashedPassword, userId);
+
+  return { userId, username, email };
+};
+
+module.exports = { signUp, signIn , verifyToken, verifyUpdateDetails };
