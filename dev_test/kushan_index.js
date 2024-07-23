@@ -1,8 +1,8 @@
 const express = require('express');
-const authRoutes = require('./routes/authRoutes');
-const postRoutes = require('./routes/postRoutes');
-const imageRoutes = require('./routes/imageRoutes');
-const reviewRoutes = require('./routes/reviewRoutes');
+const authRoutes = require('../routes/authRoutes');
+const postRoutes = require('../routes/postRoutes');
+const imageRoutes = require('../routes/imageRoutes');
+const reviewRoutes = require('../routes/reviewRoutes');
 const bodyParser = require('body-parser');
 
 const app = express();

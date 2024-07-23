@@ -13,4 +13,10 @@ const signupDetailsSchema = Joi.object({
     email
 });
 
-module.exports = { signupDetailsSchema };
+const updateDetailsSchema = Joi.object({
+    username,
+    password,
+    email
+});
+
+module.exports = { signupDetailsSchema, updateDetailsSchema };

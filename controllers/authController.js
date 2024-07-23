@@ -30,4 +30,15 @@ const checkToken = (req, res) => {
     // req.userId = decoded.id;
 };
 
-module.exports = {signUp, signIn, checkToken};
+const verifyUpdateDetails = async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+        const userId = req.params.id;
+        const user = await authService.verifyUpdateDetails(username, email, password, userId);
+        res.status(200).json({ message: 'User updated successfully', user });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+module.exports = {signUp, signIn, checkToken, verifyUpdateDetails};
