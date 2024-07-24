@@ -8,6 +8,8 @@ const imageRoutes = require('./routes/imageRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const googleAPIRoutes = require('./routes/googleapiRoutes');
 const userRoutes = require('./routes/userRoutes');
+//
+const reviewPostRoutes = require('./routes/reviewPostRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +23,8 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/googleapi', googleAPIRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/auth/user', authRoutes);
+//
+app.use('/api/reviews', reviewPostRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
