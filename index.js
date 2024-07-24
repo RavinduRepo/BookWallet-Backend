@@ -20,7 +20,6 @@ app.use('/api/image', imageRoutes);
 app.use('/api/reviews', reviewRoutes); 
 app.use('/api/googleapi', googleAPIRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/auth/user', authRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

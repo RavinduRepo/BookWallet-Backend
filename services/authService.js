@@ -30,14 +30,16 @@ const signIn = async (email, password) => {
     return token;
 };
 
-const verifyToken = (token, res) => {
-  console.log("calling tolken verify");
-  
-    jwt.verify(token, process.env.JWT_SECRET, (err,decoded) => {
-      if (err) return res.status(401).send('Invalid token');
-      // console.log(decoded);
-      res.status(200).send('Token valid');
-    });
+const verifyToken = (token) => {
+  return new Promise((resolve, reject) => {
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+          if (err) {
+              reject(err);
+          } else {
+              resolve(decoded);
+          }
+      });
+  });
 };
 
 const verifyUpdateDetails = async (username, email, password, userId) => {

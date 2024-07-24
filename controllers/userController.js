@@ -1,4 +1,5 @@
 const db = require("../config/dbConfig");
+const services = require("../services/userServices");
 
 const createUser = async (username, email, password) => {
   const sql = "INSERT INTO user (username, email, password) VALUES (?, ?, ?)";
@@ -18,14 +19,12 @@ const getUserDetails = async (req, res) => {
   const userId = parseInt(req.params.id);
 
   try {
-    // console.log("calling .getuser");
-    const sql = "SELECT * FROM user WHERE user_id = ?";
-    const [rows] = await db.execute(sql, [userId]);
+    const user = await services.getUserDetails(userId);
 
-    if (rows.length > 0) {
-      res.json(rows[0]);
+    if (user) {
+      res.json(user);
     } else {
-      res.status(404).json({ message: "user not found" });
+      res.status(404).json({ message: "User not found" });
     }
   } catch (err) {
     res.status(500).json({ message: "Database error", error: err });
@@ -90,7 +89,7 @@ const updatePassword = async (req, res) => {
 };
 
 const updateAllDetails = async (username, email, password, userId) => {
-  const sql = "UPDATE user SET username = ?, email = ?, password = ? WHERE user_id = ?";
+  const sql = "UPDATE user SET username = ?, email = ?, password = ? WHERE user_id = ?";  
   await db.execute(sql, [username, email, password, userId]);
 };
 
