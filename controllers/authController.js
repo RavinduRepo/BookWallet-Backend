@@ -52,10 +52,17 @@ const handleToken = async (req, res) => {
 };
 
 const verifyUpdateDetails = async (req, res) => {
+    const { username, email, password, token } = req.body;
+    const decoded = await authService.verifyToken(token);
+    const userIdToken = decoded.id.toString();
     console.log("reached to edit");
     try {
-        const { username, email, password } = req.body;
         const userId = req.params.id;
+        console.log('userIdToken: ',{userIdToken});
+        console.log('userId: ',{userId});
+        if (userIdToken !== userId) {
+            return res.status(403).json({ error: 'Unauthorized action' });
+        }       
         const user = await authService.verifyUpdateDetails(username, email, password, userId);
         console.log("updated the user");
         res.status(200).json({ message: 'User updated successfully', user });
