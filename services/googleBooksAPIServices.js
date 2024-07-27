@@ -24,11 +24,15 @@ const googleAPISearch = async (req, res) => {
         const replylist = [];
 
         books.forEach(book => {
+            const industryIdentifiers = book.volumeInfo.industryIdentifiers
+                ? book.volumeInfo.industryIdentifiers.map(identifier => `${identifier.type}: ${identifier.identifier}`).join('\n')
+                : '--';
             replylist.push({
                 title: book.volumeInfo.title,
                 author: book.volumeInfo.authors.join(', '), // Join authors into a string
                 pages: book.volumeInfo.pageCount,
                 genre: book.volumeInfo.categories.join(', '),
+                ISBN: industryIdentifiers,
                 totalRating: '--', // change to actual rating
                 imageUrl: book.volumeInfo.imageLinks.thumbnail,
                 description: book.volumeInfo.description
