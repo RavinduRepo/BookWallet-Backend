@@ -11,15 +11,15 @@ const validateBookReview = (req, res, next) => {
 
   const requiredBookFields = [
     "title",
-    "ISBN",
+    "ISBN10",
+    "ISBN13",
     "publication_date",
     "description",
-    "price",
     "author",
     "rating",
     "genre",
   ];
-  const requiredReviewFields = ["user_id", "context", "rating", "date"];
+  const requiredReviewFields = ["user_id", "context", "rating"];
 
   for (const field of requiredBookFields) {
     if (!book[field]) {
