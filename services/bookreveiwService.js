@@ -10,6 +10,7 @@ const addBookAndReview = async (book, review) => {
     author,
     rating,
     genre,
+    imageUrl,
   } = book;
 
   const { user_id, context, rating: reviewRating, group_id } = review;
@@ -29,8 +30,8 @@ const addBookAndReview = async (book, review) => {
     if (checkBookRows.length === 0) {
       // Book is not available, insert it
       const insertBookSql = `
-        INSERT INTO book (title, ISBN10, ISBN13, publication_date, description, author, rating, genre)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        INSERT INTO book (title, ISBN10, ISBN13, publication_date, description, author, rating, genre,imageUrl)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const [insertBookResult] = await db.query(insertBookSql, [
         title,
@@ -41,6 +42,7 @@ const addBookAndReview = async (book, review) => {
         author,
         rating,
         genre,
+        imageUrl,
       ]);
 
       if (insertBookResult.affectedRows > 0) {
