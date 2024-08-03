@@ -9,7 +9,10 @@ app.listen(port, () => console.log(`Listening on port ${port}...`));
 // Import the authentication routes
 
 const bookRoutes = require('../routes/bookRoutes');
+const groupRoutes = require('../routes/groupRoutes');
 
 // Use the routes
 
 app.use('/api',bookRoutes);
+app.use('/api',groupRoutes);
+
