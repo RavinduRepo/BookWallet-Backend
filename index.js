@@ -5,10 +5,10 @@ const bodyParser = require("body-parser");
 const authRoutes = require("./routes/authRoutes");
 const postRoutes = require("./routes/postRoutes");
 const imageRoutes = require("./routes/imageRoutes");
+//
 const reviewRoutes = require("./routes/reviewRoutes");
 const googleAPIRoutes = require("./routes/googleapiRoutes");
 const userRoutes = require("./routes/userRoutes");
-//
 const reviewPostRoutes = require("./routes/reviewPostRoutes");
 //
 const bookReviewRoutes = require("./routes/addBookadnReviewRoutes");
