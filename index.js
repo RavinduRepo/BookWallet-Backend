@@ -13,6 +13,8 @@ const reviewPostRoutes = require("./routes/reviewPostRoutes");
 //
 const bookReviewRoutes = require("./routes/addBookadnReviewRoutes");
 
+const wishlistRoutes = require("./routes/wishlistRoutes");
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -28,6 +30,7 @@ app.use("/api/user", userRoutes);
 //
 app.use("/api/reviews", reviewPostRoutes);
 //
+app.use("/api/wishlist",wishlistRoutes);
 
 app.use("/api/book-review", bookReviewRoutes);
 app.listen(PORT, () => {
