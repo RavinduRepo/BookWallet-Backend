@@ -4,13 +4,13 @@ const Post = require('../models/postModel');
 const getPosts = async (req, res) => {
     try {
         const [rows] = await db.execute(
-            `SELECT reviewed.context, reviewed.rating, user.username, book.title, book.author
+            `SELECT reviewed.context, reviewed.rating, user.username, book.title, book.author, book.imageUrl
             FROM reviewed
             INNER JOIN user ON reviewed.user_id = user.user_id
             INNER JOIN book ON reviewed.book_id = book.book_id;`
         );
         const posts = rows.map(row => new Post(
-            'images/Book_Image1.jpg',
+            row.imageUrl,
             row.title,
             row.author,
             row.context,
