@@ -3,7 +3,7 @@ const db = require("../config/dbConfig");
 exports.getWishlistByUserId = async (userId) => {
     try {
         const query = `
-            SELECT b.title, b.ISBN10, b.ISBN13, b.publication_date, b.description, b.author, b.rating, b.genre, b.imageUrl
+            SELECT b.title, b.ISBN10, b.ISBN13, b.publishedDate, b.description,b.pages, b.author, b.totalRating, b.genre, b.imageUrl,b.resource
             FROM wishlist w
             JOIN book b ON w.book_id = b.book_id
             WHERE w.user_id = ?;
