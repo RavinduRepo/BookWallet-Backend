@@ -33,7 +33,7 @@ const getReviewWithId = async (req, res) => {
 const getReviews = async (req, res) => {
     try {
         const query = `
-            SELECT reviewed.*, user.username, book.title, book.author
+            SELECT reviewed.*, user.username, book.title, book.author, book.imageUrl
             FROM reviewed
             INNER JOIN user ON reviewed.user_id = user.user_id
             INNER JOIN book ON reviewed.book_id = book.book_id
@@ -76,7 +76,7 @@ const getReviewWithBookId = async (req, res) => {
         }
 
         const posts = reviewDetails.map(reviewDetail => new Post(
-            'images/Book_Image1.jpg',
+            reviewDetail.imageUrl,
             reviewDetail.title,
             reviewDetail.author,
             reviewDetail.context,
@@ -115,7 +115,7 @@ const getReviewWithUserId = async (req, res) => {
         }
 
         const posts = reviewDetails.map(reviewDetail => new Post(
-            'images/Book_Image1.jpg',
+            reviewDetail.imageUrl,
             reviewDetail.title,
             reviewDetail.author,
             reviewDetail.context,
