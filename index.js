@@ -12,7 +12,6 @@ const reviewPostRoutes = require("./routes/reviewPostRoutes");
 const bookReviewRoutes = require("./routes/addBookandReviewRoutes");
 const userfollowRoutes = require("./routes/userfollowRoutes");
 const bookRoutes = require("./routes/bookRoutes");
-
 const wishlistRoutes = require("./routes/wishlistRoutes");
 
 const app = express();
@@ -27,9 +26,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/googleapi", googleAPIRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/reviews", reviewPostRoutes);
-//
-app.use("/api/wishlist",wishlistRoutes);
-
+app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/book-review", bookReviewRoutes);
 app.use("/api/users", userfollowRoutes);
 app.use("/api/book", bookRoutes);
