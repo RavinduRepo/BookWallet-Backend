@@ -50,6 +50,7 @@ const getRecommendedBook = async (req, res) => {
             [userId]
         );
         const books = rows.map(row => new Book(
+            row.bookId,
             row.title,
             row.author,
             row.pages,
@@ -58,8 +59,8 @@ const getRecommendedBook = async (req, res) => {
             row.ISBN13,
             row.rating,
             row.publication_date,
-            '',
-            '',
+            row.imageUrl,
+            row.description,
             row.resource
         ));
         res.json(books);
