@@ -1,6 +1,6 @@
 const db = require("../config/dbConfig");
 
-exports.getWishlistByUserId = async (userId) => {
+const getWishlistByUserId = async (userId) => {
     try {
         const query = `
             SELECT b.title, b.ISBN10, b.ISBN13, b.publication_date, b.description,b.pages, b.author, b.rating, b.genre, b.imageUrl,b.resource
@@ -23,7 +23,7 @@ exports.getWishlistByUserId = async (userId) => {
 
     
 };
-exports.getBookIdWithISBN = async (isbn) => {
+const getBookIdWithISBN = async (isbn) => {
     try {
         const query = `SELECT book_id FROM book WHERE ISBN10 = ? OR ISBN13 = ?`;
         const [results] = await db.query(query, [isbn, isbn]);
@@ -38,7 +38,7 @@ exports.getBookIdWithISBN = async (isbn) => {
     }
 };
 
-exports.addToWishlist = async (userId, bookId) => {
+const addToWishlist = async (userId, bookId) => {
     try {
         const query = `INSERT INTO wishlist (user_id, book_id) VALUES (?, ?)`;
         await db.query(query, [userId, bookId]);
@@ -74,5 +74,9 @@ const postWishlistBook = async (req, res) => {
         res.status(500).json({ message: 'Server error while adding to wishlist', error: error.message });
     }
 };
-
-module.exports = { postWishlistBook };
+module.exports = { 
+    getWishlistByUserId,
+    getBookIdWithISBN,
+    addToWishlist,
+    postWishlistBook 
+};
