@@ -1,9 +1,12 @@
 const db = require("../config/dbConfig"); // Import the Promise-based pool
 
 const addReview = async (review, bookId) => {
+  console.log("tring to post a review1111");
+
   const { user_id, context, rating: reviewRating, group_id } = review;
 
   try {
+    console.log("tring to post a review");
   // Check if the user exists
   const checkUserSql = "SELECT user_id FROM user WHERE user_id = ?";
   const [checkUserRows] = await db.query(checkUserSql, [user_id]);

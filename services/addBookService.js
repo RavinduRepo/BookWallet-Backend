@@ -9,6 +9,7 @@ const addBook = async (book) => {
     description,
     author,
     rating,
+    pages,
     genre,
     imageUrl,
     resource,
@@ -27,8 +28,8 @@ const addBook = async (book) => {
     if (checkBookRows.length === 0) {
       // Book is not available, insert it
       const insertBookSql = `
-        INSERT INTO book (title, ISBN10, ISBN13, publication_date, description, author, rating, genre,imageUrl,resource)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        INSERT INTO book (title, ISBN10, ISBN13, publication_date, description, author, rating, pages, genre, imageUrl,resource)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
       const [insertBookResult] = await db.query(insertBookSql, [
         title,
@@ -38,6 +39,7 @@ const addBook = async (book) => {
         description,
         author,
         rating,
+        pages,
         genre,
         imageUrl,
         resource,
