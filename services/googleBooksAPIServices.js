@@ -47,7 +47,7 @@ const googleAPISearch = async (req, res) => {
         ISBN10: ISBN10,
         ISBN13: ISBN13,
         publishedDate: book.volumeInfo.publishedDate,
-        totalRating: book.volumeInfo.averageRating || "N/A", // Update with actual rating
+        totalRating: book.volumeInfo.averageRating || 0, // Update with actual rating
         imageUrl: book.volumeInfo.imageLinks
           ? book.volumeInfo.imageLinks.thumbnail
           : "N/A",
