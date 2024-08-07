@@ -17,21 +17,29 @@ const googleAPISearch = async (req, res) => {
         q: query,
         startIndex: (index - 1) * 10,
         maxResults: 10, // Example: Fetching 10 results per page
+        printType: "books", // Ensure only books are returned
       },
     });
 
-    const books = response.data.items.map((item) => new Book(item)); // Assuming items is an array of book objects
+    const booksWithISBN = response.data.items.filter(item => {
+      const industryIdentifiers = item.volumeInfo.industryIdentifiers || [];
+      return industryIdentifiers.some(identifier => 
+        identifier.type === "ISBN_10" || identifier.type === "ISBN_13"
+      );
+    });
+
+    const books = booksWithISBN.map(item => new Book(item)); // Assuming items is an array of book objects
     const replylist = [];
 
-    books.forEach((book) => {
+    books.forEach(book => {
       const industryIdentifiers = book.volumeInfo.industryIdentifiers || [];
 
       // Separate ISBN10 and ISBN13
       const ISBN10 =
-        industryIdentifiers.find((identifier) => identifier.type === "ISBN_10")
+        industryIdentifiers.find(identifier => identifier.type === "ISBN_10")
           ?.identifier || "N/A";
       const ISBN13 =
-        industryIdentifiers.find((identifier) => identifier.type === "ISBN_13")
+        industryIdentifiers.find(identifier => identifier.type === "ISBN_13")
           ?.identifier || "N/A";
 
       replylist.push({
@@ -45,7 +53,7 @@ const googleAPISearch = async (req, res) => {
           : "N/A",
         ISBN10: ISBN10,
         ISBN13: ISBN13,
-        publishedDate: book.volumeInfo.publishedDate,
+        publishedDate: book.volumeInfo.publishedDate || "N/A", // Handle missing dates
         totalRating: book.volumeInfo.averageRating || 0, // Update with actual rating
         imageUrl: book.volumeInfo.imageLinks
           ? book.volumeInfo.imageLinks.thumbnail
