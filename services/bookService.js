@@ -52,5 +52,15 @@ exports.getBookIdWithISBN = async (req, res) => {
     console.error('Error fetching book Id:', error);
     res.status(500).json({ message: 'Server error while fetching book Id' });
   }
+};
 
-}
+exports.getBookById = async (bookId) => {
+  try {
+    const query = `SELECT * FROM book WHERE book.book_id = ?`;
+    const [result] = await pool.execute(query, [bookId]);
+    return result;
+  } catch (error) {
+    console.error('Error fetching book from the database:', error);
+    throw error;
+  }
+};

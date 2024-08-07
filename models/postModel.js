@@ -1,5 +1,8 @@
 class Post {
-    constructor(imagePath, bookName, authorName, context, rating, reviwerName) {
+    constructor(reviewId, bookId, userId, imagePath, bookName, authorName, context, rating, reviwerName) {
+      this.reviewId = reviewId;
+      this.bookId = bookId;
+      this.userId = userId;
       this.imagePath = imagePath;
       this.bookName = bookName;
       this.authorName = authorName;
