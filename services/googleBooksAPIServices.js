@@ -5,7 +5,6 @@ const Book = require("../models/googleBookModel"); // Ensure correct path to goo
 const GOOGLE_BOOKS_API = "https://www.googleapis.com/books/v1/volumes";
 
 const googleAPISearch = async (req, res) => {
-    console.log('try');
   const { query, index } = req.query;
 
   if (!query || !index) {

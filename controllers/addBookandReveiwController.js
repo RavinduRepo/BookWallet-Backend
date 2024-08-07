@@ -13,8 +13,9 @@ const addBookAndReviewController = async (req, res) => {
   }
 
   try {
+    console.log("tring add a book");
+
     const bookId = await addBook(book);
-    console.log(bookId);
     const result = await addReview(review, bookId);
     if (result) {
       res.status(201).json({ message: "Review added successfully" });

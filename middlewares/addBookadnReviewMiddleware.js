@@ -22,16 +22,14 @@ const validateBookReview = (req, res, next) => {
   const requiredReviewFields = ["user_id", "context", "rating"];
 
   for (const field of requiredBookFields) {
-    if (!book[field]) {
+    if (book[field] === undefined || book[field] === null) {
       return res.status(400).json({ message: `Missing book field: ${field}` });
     }
   }
 
   for (const field of requiredReviewFields) {
-    if (!review[field]) {
-      return res
-        .status(400)
-        .json({ message: `Missing review field: ${field}` });
+    if (review[field] === undefined || review[field] === null) {
+      return res.status(400).json({ message: `Missing review field: ${field}` });
     }
   }
 
