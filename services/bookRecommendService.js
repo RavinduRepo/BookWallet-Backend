@@ -43,24 +43,24 @@ const getRecommendedBook = async (req, res) => {
 
     try {
         const [rows] = await db.execute(
-            `SELECT b.*
-            FROM book b
-            JOIN book_recommended br ON b.book_id = br.book_id
-            WHERE br.user_id = ?;`,
+            `SELECT *
+            FROM book
+            INNER JOIN book_recommended  ON book.book_id = book_recommended.book_id
+            WHERE book_recommended.user_id = ?;`,
             [userId]
         );
         const books = rows.map(row => new Book(
             row.bookId,
             row.title,
-            row.author,
-            row.pages,
-            row.genre,
             row.ISBN10,
             row.ISBN13,
-            row.rating,
             row.publication_date,
-            row.imageUrl,
             row.description,
+            row.author,
+            row.rating,
+            row.pages,
+            row.genre,
+            row.imageUrl,
             row.resource
         ));
         res.json(books);

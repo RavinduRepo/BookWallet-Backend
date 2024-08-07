@@ -12,6 +12,7 @@ exports.getBookWithId = async (req, res) => {
       return res.status(400).json({ message: 'Book not found' });
     }
     const book = result.map(row => new Book(
+      row.bookId,
       row.title,
       row.ISBN10,
       row.ISBN13,
