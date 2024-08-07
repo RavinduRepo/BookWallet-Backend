@@ -1,17 +1,16 @@
 class Book {
-    constructor(bookId, title, author, pages, genre, ISBN10, ISBN13, totalRating, publishedDate, imageUrl, description, resource) {
-        this.bookId = bookId;
-        this.title = title;
-        this.author = author;
-        this.pages = pages;
-        this.genre = genre;
-        this.ISBN10 = ISBN10;
-        this.ISBN13 = ISBN13;
-        this.totalRating = totalRating;
-        this.publishedDate = publishedDate;
-        this.imageUrl = imageUrl;
-        this.description = description;
-        this.resource = resource;
+    constructor(title, ISBN10, ISBN13, publishedDate, description, author, totalRating, pages, genre, imageUrl, resource) {
+      this.title = title;
+      this.ISBN10 = ISBN10;
+      this.ISBN13 = ISBN13;
+      this.publishedDate = publishedDate;
+      this.description = description;
+      this.author = author;
+      this.totalRating = totalRating;
+      this.pages = pages;
+      this.genre = genre;
+      this.imageUrl = imageUrl;
+      this.resource = resource;
     }
   }
   

@@ -4,12 +4,15 @@ const Post = require('../models/postModel');
 const getPosts = async (req, res) => {
     try {
         const [rows] = await db.execute(
-            `SELECT reviewed.context, reviewed.rating, user.username, book.title, book.author, book.imageUrl
+            `SELECT reviewed.review_id, reviewed.book_id, reviewed.user_id, book.imageUrl, book.title, book.author, reviewed.context, reviewed.rating, user.username 
             FROM reviewed
             INNER JOIN user ON reviewed.user_id = user.user_id
             INNER JOIN book ON reviewed.book_id = book.book_id;`
         );
         const posts = rows.map(row => new Post(
+            row.review_id,
+            row.book_id,
+            row.user_id,
             row.imageUrl,
             row.title,
             row.author,
@@ -17,6 +20,7 @@ const getPosts = async (req, res) => {
             row.rating,
             row.username,
         ));
+        console.log(posts);
         res.json(posts);
     } catch (error) {
         console.error('Error fetching posts:', error); // Log the actual error
