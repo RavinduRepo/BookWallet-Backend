@@ -58,7 +58,7 @@ const googleAPISearch = async (req, res) => {
         imageUrl: book.volumeInfo.imageLinks
           ? book.volumeInfo.imageLinks.thumbnail
           : "N/A",
-        description: book.volumeInfo.description || "N/A",
+        description: book.volumeInfo.description || "",
         resource: "Google",
       });
     });
