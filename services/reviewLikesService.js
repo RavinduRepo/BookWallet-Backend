@@ -20,7 +20,29 @@ const getUsersWhoLikedReview = async (reviewId) => {
     );
   }
 };
+const likeReview = async (reviewId, userId) => {
+  const query = "INSERT INTO likes (review_id, user_id) VALUES (?, ?)";
+  const values = [reviewId, userId];
+
+  await db.query(query, values);
+};
+
+const unlikeReview = async (reviewId, userId) => {
+  const query = "DELETE FROM likes WHERE review_id = ? AND user_id = ?";
+  const values = [reviewId, userId];
+
+  await db.query(query, values);
+};
+
+const getLikeCount = async (reviewId) => {
+  const query = "SELECT COUNT(*) AS like_count FROM likes WHERE review_id = ?";
+  const [rows] = await db.query(query, [reviewId]);
+  return rows[0].like_count;
+};
 
 module.exports = {
   getUsersWhoLikedReview,
+  likeReview,
+  unlikeReview,
+  getLikeCount,
 };
