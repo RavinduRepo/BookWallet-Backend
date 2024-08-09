@@ -19,7 +19,7 @@ const getUserDetails = async (req, res) => {
   const userId = parseInt(req.params.id);
 
   try {
-    const user = await services.getUserDetails(userId);
+    const user = await services.getUserProfile(userId);
 
     if (user) {
       res.json(user);
@@ -93,6 +93,22 @@ const updateAllDetails = async (username, email, password, userId) => {
   await db.execute(sql, [username, email, password, userId]);
 };
 
+const getUserProfile = async (req, res) => {
+const userId = parseInt(req.params.id);
+
+  try {
+    const user = await services.getUserProfile(userId);
+
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+    } catch (err) {
+      res.status(500).json({ message: "Database error", error: err.message });
+  }
+};
+
 module.exports = {
   createUser,
   findUserByEmail,
@@ -100,7 +116,8 @@ module.exports = {
   updateUsername,
   updateEmail,
   updatePassword,
-  updateAllDetails
+  updateAllDetails,
+  getUserProfile
 };
 
 
