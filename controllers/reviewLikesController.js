@@ -63,9 +63,27 @@ const getLikeCountController = async (req, res) => {
   }
 };
 
+const checkIfLikedController = async (req, res) => {
+  const { userId, reviewId } = req.params;
+
+  if (!userId || !reviewId) {
+    return res
+      .status(400)
+      .json({ error: "User ID and Review ID are required" });
+  }
+
+  try {
+    const isLiked = await reviewLikesService.checkIfLiked(userId, reviewId);
+    res.status(200).json({ isLiked });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   getUsersWhoLikedReview,
   likeReviewController,
   unlikeReviewController,
   getLikeCountController,
+  checkIfLikedController,
 };

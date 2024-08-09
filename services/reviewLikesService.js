@@ -40,9 +40,24 @@ const getLikeCount = async (reviewId) => {
   return rows[0].like_count;
 };
 
+const checkIfLiked = async (userId, reviewId) => {
+  try {
+    const query = `
+      SELECT COUNT(*) as count
+      FROM likes
+      WHERE user_id = ? AND review_id = ?`;
+    const [rows] = await db.query(query, [userId, reviewId]);
+    return rows[0].count > 0;
+  } catch (err) {
+    console.error("Database error in checkIfLiked: ", err.message);
+    throw new Error("Database error: " + err.message);
+  }
+};
+
 module.exports = {
   getUsersWhoLikedReview,
   likeReview,
   unlikeReview,
   getLikeCount,
+  checkIfLiked,
 };
