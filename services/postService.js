@@ -3,7 +3,6 @@ const Post = require("../models/postModel");
 
 const getPosts = async (req, res) => {
   try {
-    
     const [rows] = await db.execute(
       `SELECT reviewed.review_id, 
        reviewed.book_id, 
@@ -13,6 +12,7 @@ const getPosts = async (req, res) => {
        book.author, 
        reviewed.context, 
        reviewed.rating, 
+       reviewed.date,
        user.username,
        COUNT(DISTINCT likes.user_id) AS likesCount,
        COUNT(DISTINCT comments.comment_id) AS commentsCount,
@@ -23,7 +23,7 @@ INNER JOIN book ON reviewed.book_id = book.book_id
 LEFT JOIN likes ON likes.review_id = reviewed.review_id
 LEFT JOIN comments ON comments.review_id = reviewed.review_id
 LEFT JOIN shares ON shares.review_id = reviewed.review_id
-GROUP BY reviewed.review_id, reviewed.book_id, reviewed.user_id, book.imageUrl, book.title, book.author, reviewed.context, reviewed.rating, user.username;
+GROUP BY reviewed.review_id, reviewed.book_id, reviewed.user_id, book.imageUrl, book.title, book.author, reviewed.context, reviewed.rating,reviewed.date, user.username;
 `
     );
     const posts = rows.map(
@@ -37,6 +37,7 @@ GROUP BY reviewed.review_id, reviewed.book_id, reviewed.user_id, book.imageUrl, 
           row.author,
           row.context,
           row.rating,
+          row.date,
           row.username,
           row.likesCount,
           row.commentsCount,
