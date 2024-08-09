@@ -1,5 +1,5 @@
 const db = require("../config/dbConfig");
-
+const UserProfile = require("../models/userProfileModel");
 
 const getUserDetails = async (userId) => {
     try {
@@ -14,6 +14,26 @@ const getUserDetails = async (userId) => {
     } catch (err) {
       throw new Error('Database error');
     }
-  };
-  
-  module.exports = { getUserDetails };
+};
+
+const getUserProfile = async (userId) => {
+  try {
+    const sql = "SELECT user.username FROM user WHERE user_id = ?";
+    const [rows] = await db.execute(sql, [userId]);
+
+    if (rows.length === 0) {
+      return null;
+    }
+
+    const userprofile = rows.map(row => new UserProfile(
+    row.username,
+    /////
+    ));
+
+    return userprofile;
+  } catch (err) {
+      throw new Error('Database error');
+  }
+};
+
+module.exports = { getUserDetails, getUserProfile };
