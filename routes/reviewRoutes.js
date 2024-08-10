@@ -25,6 +25,11 @@ router.post("/:reviewId/like", reviewLikesController.likeReviewController);
 // Route to unlike a review
 router.post("/:reviewId/unlike", reviewLikesController.unlikeReviewController);
 
+// Route to check liked
+router.get(
+  "/:reviewId/likes/:userId",
+  reviewLikesController.checkIfLikedController
+);
 // Route to get the like count for a review
 router.get(
   "/:reviewId/like-count",

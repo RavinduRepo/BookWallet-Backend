@@ -8,6 +8,7 @@ class Post {
     authorName,
     context,
     rating,
+    date,
     reviwerName,
     likesCount,
     commentsCount,
@@ -21,6 +22,7 @@ class Post {
     this.authorName = authorName;
     this.context = context;
     this.rating = rating;
+    this.date = date;
     this.reviwerName = reviwerName;
     this.likesCount = likesCount;
     this.commentsCount = commentsCount;

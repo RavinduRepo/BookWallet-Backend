@@ -40,9 +40,8 @@ const getReviews = async (req, res) => {
             INNER JOIN user ON reviewed.user_id = user.user_id
             INNER JOIN book ON reviewed.book_id = book.book_id
         `;
-
     const [reviewDetails] = await db.execute(query);
-
+    console.log(reviewDetails);
     if (reviewDetails.length === 0) {
       return res.status(404).json({ message: "No reviews found" });
     }
@@ -81,33 +80,37 @@ const getReviewWithBookId = async (req, res) => {
 
     const query = `
     SELECT reviewed.review_id, 
-           reviewed.book_id, 
-           reviewed.user_id, 
-           reviewed.context, 
-           reviewed.rating, 
-           book.title, 
-           book.author, 
-           book.imageUrl, 
-           user.username,
-           COUNT(DISTINCT likes.user_id) AS likesCount,
-           COUNT(DISTINCT comments.comment_id) AS commentsCount,
-           COUNT(DISTINCT shares.share_id) AS sharesCount
-    FROM reviewed
-    INNER JOIN user ON reviewed.user_id = user.user_id
-    INNER JOIN book ON reviewed.book_id = book.book_id
-    LEFT JOIN likes ON likes.review_id = reviewed.review_id
-    LEFT JOIN comments ON comments.review_id = reviewed.review_id
-    LEFT JOIN shares ON shares.review_id = reviewed.review_id
-    WHERE book.book_id = ?
-    GROUP BY reviewed.review_id, 
-             reviewed.book_id, 
-             reviewed.user_id, 
-             reviewed.context, 
-             reviewed.rating, 
-             book.title, 
-             book.author, 
-             book.imageUrl, 
-             user.username;
+       reviewed.book_id, 
+       reviewed.user_id, 
+       reviewed.context, 
+       reviewed.rating, 
+       reviewed.date,
+       book.title, 
+       book.author, 
+       book.imageUrl, 
+       user.username,
+       COUNT(DISTINCT likes.user_id) AS likesCount,
+       COUNT(DISTINCT comments.comment_id) AS commentsCount,
+       COUNT(DISTINCT shares.share_id) AS sharesCount
+FROM reviewed
+INNER JOIN user ON reviewed.user_id = user.user_id
+INNER JOIN book ON reviewed.book_id = book.book_id
+LEFT JOIN likes ON likes.review_id = reviewed.review_id
+LEFT JOIN comments ON comments.review_id = reviewed.review_id
+LEFT JOIN shares ON shares.review_id = reviewed.review_id
+WHERE book.book_id = ?
+GROUP BY reviewed.review_id, 
+         reviewed.book_id, 
+         reviewed.user_id, 
+         reviewed.context, 
+         reviewed.rating, 
+         reviewed.date,
+         book.title, 
+         book.author, 
+         book.imageUrl, 
+         user.username;
+
+
 `;
 
     const [reviewDetails] = await db.execute(query, [bookId]);
@@ -127,6 +130,7 @@ const getReviewWithBookId = async (req, res) => {
           reviewDetail.author,
           reviewDetail.context,
           reviewDetail.rating,
+          reviewDetail.date,
           reviewDetail.username,
           reviewDetail.likesCount,
           reviewDetail.commentsCount,
@@ -157,6 +161,7 @@ const getReviewWithUserId = async (req, res) => {
            reviewed.user_id, 
            reviewed.context, 
            reviewed.rating, 
+           reviewed.date,
            book.title, 
            book.author, 
            book.imageUrl, 
@@ -164,6 +169,7 @@ const getReviewWithUserId = async (req, res) => {
            COUNT(DISTINCT likes.user_id) AS likesCount,
            COUNT(DISTINCT comments.comment_id) AS commentsCount,
            COUNT(DISTINCT shares.share_id) AS sharesCount
+           
     FROM reviewed
     INNER JOIN user ON reviewed.user_id = user.user_id
     INNER JOIN book ON reviewed.book_id = book.book_id
@@ -176,10 +182,12 @@ const getReviewWithUserId = async (req, res) => {
              reviewed.user_id, 
              reviewed.context, 
              reviewed.rating, 
+             reviewed.date,
              book.title, 
              book.author, 
              book.imageUrl, 
              user.username;
+             
 `;
 
     const [reviewDetails] = await db.execute(query, [userId]);
@@ -199,6 +207,7 @@ const getReviewWithUserId = async (req, res) => {
           reviewDetail.author,
           reviewDetail.context,
           reviewDetail.rating,
+          reviewDetail.date,
           reviewDetail.username,
           reviewDetail.likesCount,
           reviewDetail.commentsCount,
