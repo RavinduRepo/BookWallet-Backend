@@ -76,36 +76,20 @@ const postWishlistBook = async (req, res) => {
 };
 const removeFromWishlist = async (userId, bookId) => {
     try {
-        // Convert userId and bookId to numbers
-        userId = parseInt(userId, 10);
-        bookId = parseInt(bookId, 10);
-
-        // Check if conversion was successful
-        if (isNaN(userId) || isNaN(bookId)) {
-            throw new Error('User ID and Book ID must be valid numbers');
-        }
-
-        console.log('Removing from wishlist:', { userId, bookId });
-
         const query = `DELETE FROM wishlist WHERE user_id = ? AND book_id = ?`;
-        const [result] = await db.query(query, [userId, bookId]);
-
-        if (result.affectedRows === 0) {
-            throw new Error('No record found to delete');
-        }
-
-        console.log('Deletion result:', result);
+        await db.query(query, [userId, bookId]);
+        return { message: 'Book removed from wishlist successfully' };
     } catch (error) {
-        console.error('Error removing from wishlist:', error.message);
         throw new Error('Error removing from wishlist: ' + error.message);
     }
 };
+
 
 
 module.exports = { 
     getWishlistByUserId,
     getBookIdWithISBN,
     addToWishlist,
-    postWishlistBook ,
-    removeFromWishlist,
+    postWishlistBook,
+    removeFromWishlist ,
 };

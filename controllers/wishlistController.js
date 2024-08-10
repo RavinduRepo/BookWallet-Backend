@@ -46,3 +46,19 @@ exports.addToWishlist = async (req, res) => {
         res.status(500).json({ message: 'Server error while adding book to wishlist', error: error.message });
     }
 };
+exports.removeFromWishlist = async (req, res) => {
+    try {
+        const { userId, bookId } = req.params;
+
+        if (!userId || !bookId) {
+            return res.status(400).json({ message: 'User ID and Book ID are required' });
+        }
+
+        const result = await wishlistService.removeFromWishlist(userId, bookId);
+
+        return res.status(200).json(result);
+    } catch (error) {
+        console.error('Error removing book from wishlist:', error);
+        res.status(500).json({ message: 'Server error while removing book from wishlist', error: error.message });
+    }
+};
