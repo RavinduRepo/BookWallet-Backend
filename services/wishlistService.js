@@ -74,9 +74,22 @@ const postWishlistBook = async (req, res) => {
         res.status(500).json({ message: 'Server error while adding to wishlist', error: error.message });
     }
 };
+const removeFromWishlist = async (userId, bookId) => {
+    try {
+        const query = `DELETE FROM wishlist WHERE user_id = ? AND book_id = ?`;
+        await db.query(query, [userId, bookId]);
+        return { message: 'Book removed from wishlist successfully' };
+    } catch (error) {
+        throw new Error('Error removing from wishlist: ' + error.message);
+    }
+};
+
+
+
 module.exports = { 
     getWishlistByUserId,
     getBookIdWithISBN,
     addToWishlist,
-    postWishlistBook 
+    postWishlistBook,
+    removeFromWishlist ,
 };
