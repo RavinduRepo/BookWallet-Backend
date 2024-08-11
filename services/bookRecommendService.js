@@ -1,14 +1,24 @@
 const db = require('../config/dbConfig');
 const Book = require('../models/bookModel');
+const authService = require('../services/authService');
 
 const postRecommendBook = async (req, res) => {
-    const { bookId, recommenderId } = req.params;
+    const { bookId, recommenderId} = req.params;
+    const { token } = req.query;
 
     if (!recommenderId || !bookId) {
         return res.status(400).json({ message: 'Recommender ID or Book ID is required' });
     }
 
     try {
+        const decoded = await authService.verifyToken(token);
+        const userIdToken = decoded.id.toString();
+        // console.log('Decoded User ID:', userIdToken);
+        // console.log('Recommender ID:', recommenderId);
+        if (userIdToken !== recommenderId) {
+            return res.status(403).json({ error: 'Unauthorized action' });
+        }
+
         const getFollowerIdQuery = `SELECT follower_id FROM user_follows WHERE followed_id = ?`;
         const [followers] = await db.execute(getFollowerIdQuery, [recommenderId]);
 
