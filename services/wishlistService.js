@@ -1,5 +1,5 @@
 const db = require("../config/dbConfig");
-
+const authService = require('../services/authService');
 const getWishlistByUserId = async (userId) => {
     try {
         const query = `
@@ -50,12 +50,26 @@ const addToWishlist = async (userId, bookId) => {
 
 const postWishlistBook = async (req, res) => {
     const { bookId, userId } = req.params;
+    const token = req.headers.authorization?.split(' ')[1]; // Extract the token from the Authorization header
 
     if (!userId || !bookId) {
         return res.status(400).json({ message: 'User ID or Book ID is required' });
     }
 
+    if (!token) {
+        return res.status(401).json({ message: 'Authorization token is required' });
+    }
+
     try {
+        // Decode and verify the token
+        const decoded = await authService.verifyToken(token);
+        const tokenUserId = decoded.id.toString();
+
+        // Check if the token user ID matches the user ID from the request
+        if (tokenUserId !== userId) {
+            return res.status(403).json({ message: 'Unauthorized action' });
+        }
+
         // Check if the book is already in the user's wishlist
         const checkQuery = `SELECT * FROM wishlist WHERE user_id = ? AND book_id = ?`;
         const [rows] = await db.execute(checkQuery, [userId, bookId]);
@@ -74,6 +88,7 @@ const postWishlistBook = async (req, res) => {
         res.status(500).json({ message: 'Server error while adding to wishlist', error: error.message });
     }
 };
+
 const removeFromWishlist = async (userId, bookId) => {
     try {
         const query = `DELETE FROM wishlist WHERE user_id = ? AND book_id = ?`;
