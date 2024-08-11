@@ -18,7 +18,7 @@ const getUserDetails = async (userId) => {
 
 const getUserProfile = async (userId) => {
   try {
-    const sql = "SELECT user.username FROM user WHERE user_id = ?";
+    const sql = "SELECT user.user_id, user.username, user.email FROM user WHERE user_id = ?";
     const [rows] = await db.execute(sql, [userId]);
 
     if (rows.length === 0) {
@@ -26,8 +26,11 @@ const getUserProfile = async (userId) => {
     }
 
     const userprofile = rows.map(row => new UserProfile(
-    row.username,
-    /////
+      row.user_id,
+      row.username,
+      row.email,
+      'I love reading',
+      'imageUrl',
     ));
 
     return userprofile;
