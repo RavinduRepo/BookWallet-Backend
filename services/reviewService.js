@@ -123,8 +123,8 @@ GROUP BY reviewed.review_id,
       (reviewDetail) =>
         new Post(
           reviewDetail.review_id,
-          reviewDetail.user_id,
           reviewDetail.book_id,
+          reviewDetail.user_id,
           reviewDetail.imageUrl,
           reviewDetail.title,
           reviewDetail.author,
@@ -200,8 +200,8 @@ const getReviewWithUserId = async (req, res) => {
       (reviewDetail) =>
         new Post(
           reviewDetail.review_id,
-          reviewDetail.user_id,
           reviewDetail.book_id,
+          reviewDetail.user_id,
           reviewDetail.imageUrl,
           reviewDetail.title,
           reviewDetail.author,
