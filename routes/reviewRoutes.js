@@ -16,6 +16,12 @@ router.get("/getReviewWithUserId/:userId", getReviewWithUserId);
 // router.get("/:reviewId/likes", getLikesIdByReviewId);
 const reviewLikesController = require("../controllers/reviewLikesController"); // Ensure this path is correct
 
+const {
+  addCommentController,
+} = require("../controllers/reviewCommentsController");
+// Route to add a comment
+router.post("/comments/add", addCommentController);
+
 // Route to get users who liked a review
 router.get("/:reviewId/likes", reviewLikesController.getUsersWhoLikedReview); // Ensure this function exists
 
