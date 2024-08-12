@@ -4,7 +4,7 @@ const authService = require('../services/authService');
 
 const postRecommendBook = async (req, res) => {
     const { bookId, recommenderId} = req.params;
-    const { token } = req.query;
+    const { token } = req.body;
 
     if (!recommenderId || !bookId) {
         return res.status(400).json({ message: 'Recommender ID or Book ID is required' });
@@ -13,8 +13,8 @@ const postRecommendBook = async (req, res) => {
     try {
         const decoded = await authService.verifyToken(token);
         const userIdToken = decoded.id.toString();
-        // console.log('Decoded User ID:', userIdToken);
-        // console.log('Recommender ID:', recommenderId);
+        console.log('Decoded User ID:', userIdToken);
+        console.log('Recommender ID:', recommenderId);
         if (userIdToken !== recommenderId) {
             return res.status(403).json({ error: 'Unauthorized action' });
         }
