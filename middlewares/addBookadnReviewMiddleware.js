@@ -1,5 +1,9 @@
 const validateBookReview = (req, res, next) => {
-  const { book, review } = req.body;
+  const { book, review, token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ message: "Token is required" });
+  }
 
   if (!book || typeof book !== "object") {
     return res.status(400).json({ message: "Invalid book data" });
@@ -19,6 +23,7 @@ const validateBookReview = (req, res, next) => {
     "rating",
     "genre",
   ];
+
   const requiredReviewFields = ["user_id", "context", "rating"];
 
   for (const field of requiredBookFields) {
@@ -29,7 +34,9 @@ const validateBookReview = (req, res, next) => {
 
   for (const field of requiredReviewFields) {
     if (review[field] === undefined || review[field] === null) {
-      return res.status(400).json({ message: `Missing review field: ${field}` });
+      return res
+        .status(400)
+        .json({ message: `Missing review field: ${field}` });
     }
   }
 
