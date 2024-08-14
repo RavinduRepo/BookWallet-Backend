@@ -1,7 +1,7 @@
 // image upload
 const multer = require('multer');
 const path = require('path');
-const db = require('../config/dbConfig1');
+//const db = require('../config/dbConfig1');
 
 // Image upload controller
 const addImage = async (req, res) => {
