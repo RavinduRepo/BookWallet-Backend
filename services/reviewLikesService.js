@@ -54,10 +54,24 @@ const checkIfLiked = async (userId, reviewId) => {
   }
 };
 
+const getCommentsByReviewId = (reviewId) => {
+  return new Promise((resolve, reject) => {
+    const query =
+      "SELECT * FROM comments WHERE review_id = ? ORDER BY date DESC";
+    connection.query(query, [reviewId], (error, results) => {
+      if (error) {
+        return reject(new Error(`Error fetching comments: ${error.message}`));
+      }
+      resolve(results);
+    });
+  });
+};
+
 module.exports = {
   getUsersWhoLikedReview,
   likeReview,
   unlikeReview,
   getLikeCount,
   checkIfLiked,
+  getCommentsByReviewId,
 };

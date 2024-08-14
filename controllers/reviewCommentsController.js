@@ -1,4 +1,4 @@
-const { addCommentService } = require("../services/reviewCommentsServices");
+const reviewCommentsService = require("../services/reviewCommentsService");
 const authService = require("../services/authService");
 
 const addCommentController = async (req, res) => {
@@ -20,15 +20,20 @@ const addCommentController = async (req, res) => {
 
     // Check if the user ID from the token matches the comment's user ID
     const userId = comment.user_id.toString();
-    console.log("User ID from token: ", userIdToken);
-    console.log("User ID from comment: ", userId);
 
-    if (userIdToken !== userId) {
+    // //For Deubbugging
+    // console.log("User ID from token: ", userIdToken);
+    // console.log("User ID from comment: ", userId);  
+
+    if (userIdToken !== userId) {    //Checking the userids are same
       return res.status(403).json({ error: "Unauthorized action" });
     }
 
     // Add the comment to the database
-    const result = await addCommentService(comment, reviewId);
+    const result = await reviewCommentsService.addCommentService(
+      comment,
+      reviewId
+    );
 
     // Check if the comment was added successfully
     if (result) {
@@ -42,4 +47,28 @@ const addCommentController = async (req, res) => {
   }
 };
 
-module.exports = { addCommentController };
+const getCommentsByReviewIdController = async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+
+    if (!reviewId) {
+      return res.status(400).json({ message: "Review ID is required" });
+    }
+
+    const commentsDetails =
+      await reviewCommentsService.getCommentsByReviewIdService(reviewId);
+
+    if (commentsDetails.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No comments found for this review" });
+    }
+
+    res.status(200).json(commentsDetails);
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    res.status(500).json({ message: "Server error while fetching comments" });
+  }
+};
+
+module.exports = { addCommentController, getCommentsByReviewIdController };

@@ -6,6 +6,7 @@ const {
   getReviewWithBookId,
   getReviewWithUserId,
 } = require("../services/reviewService");
+
 // const { getLikesIdByReviewId } = require("../services/reviewLikesService");
 // const { ReviewPost } = require("../controllers/reviewPostController");
 const reviewController  = require("../controllers/reviewController");
@@ -17,13 +18,16 @@ router.get("/getReviewWithUserId/:userId", getReviewWithUserId);
 router.delete("/deleteReview/:reviewId/:userId", reviewController.deleteReview);
 router.put("/updateReview/:reviewId/:userId", reviewController.updateReview);
 // router.get("/:reviewId/likes", getLikesIdByReviewId);
-const reviewLikesController = require("../controllers/reviewLikesController"); // Ensure this path is correct
+const reviewLikesController = require("../controllers/reviewLikesController");
 
-const {
-  addCommentController,
-} = require("../controllers/reviewCommentsController");
+const reviewcommentsController = require("../controllers/reviewCommentsController");
 // Route to add a comment
-router.post("/comments/add", addCommentController);
+router.post("/comments/add", reviewcommentsController.addCommentController);
+// Define the route to get comments by review ID
+router.get(
+  "/:reviewId/comments",
+  reviewcommentsController.getCommentsByReviewIdController
+);
 
 // Route to get users who liked a review
 router.get("/:reviewId/likes", reviewLikesController.getUsersWhoLikedReview); // Ensure this function exists
