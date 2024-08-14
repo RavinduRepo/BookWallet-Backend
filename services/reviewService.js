@@ -123,8 +123,8 @@ GROUP BY reviewed.review_id,
       (reviewDetail) =>
         new Post(
           reviewDetail.review_id,
-          reviewDetail.user_id,
           reviewDetail.book_id,
+          reviewDetail.user_id,
           reviewDetail.imageUrl,
           reviewDetail.title,
           reviewDetail.author,
@@ -200,8 +200,8 @@ const getReviewWithUserId = async (req, res) => {
       (reviewDetail) =>
         new Post(
           reviewDetail.review_id,
-          reviewDetail.user_id,
           reviewDetail.book_id,
+          reviewDetail.user_id,
           reviewDetail.imageUrl,
           reviewDetail.title,
           reviewDetail.author,
@@ -224,9 +224,35 @@ const getReviewWithUserId = async (req, res) => {
   }
 };
 
+const deleteReview = async (reviewId, userId) => {
+  try {
+    const query = `DELETE FROM reviewed WHERE review_id = ? AND user_id = ?`;
+    await db.execute(query, [reviewId, userId]);
+  } catch {
+    console.log('Error deleting review from database', error);
+    throw error;
+  }
+};
+
+const updateReview = async (reviewId, userId, content, rating) => {
+  try {
+    const now = new Date();
+    const date = now.toISOString().split("T")[0];
+    const time = now.toTimeString().split(" ")[0];
+    const query = `UPDATE reviewed SET context = ?, rating = ?, date = ?, time = ? 
+                  WHERE review_id = ? AND user_id = ?`;
+    await db.execute(query, [content, rating, date, time, reviewId, userId]);
+  } catch {
+    console.log('Error updating review to database', error);
+    throw error;
+  }
+};
+
 module.exports = {
   getReviewWithId,
   getReviews,
   getReviewWithBookId,
   getReviewWithUserId,
+  deleteReview,
+  updateReview
 };
