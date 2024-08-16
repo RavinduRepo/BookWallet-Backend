@@ -23,9 +23,10 @@ const addCommentController = async (req, res) => {
 
     // //For Deubbugging
     // console.log("User ID from token: ", userIdToken);
-    // console.log("User ID from comment: ", userId);  
+    // console.log("User ID from comment: ", userId);
 
-    if (userIdToken !== userId) {    //Checking the userids are same
+    if (userIdToken !== userId) {
+      //Checking the userids are same
       return res.status(403).json({ error: "Unauthorized action" });
     }
 
@@ -47,6 +48,7 @@ const addCommentController = async (req, res) => {
   }
 };
 
+//fot get comment for relevant review
 const getCommentsByReviewIdController = async (req, res) => {
   try {
     const { reviewId } = req.params;
@@ -71,4 +73,51 @@ const getCommentsByReviewIdController = async (req, res) => {
   }
 };
 
-module.exports = { addCommentController, getCommentsByReviewIdController };
+//For delete the comments by only user who have sent
+const deleteCommentController = async (req, res) => {
+  const { commentId, userId } = req.params;
+  const { token } = req.body;
+
+  try {
+    const decoded = await authService.verifyToken(token);
+    const userIdToken = decoded.id.toString();
+    if (userIdToken !== userId) {
+      return res.status(403).json({ error: "Unauthorized action" });
+    }
+    await reviewCommentsService.deleteCommentService(commentId, userId);
+    return res.status(200).json({ message: "Comment deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    return res.status(500).json({ message: "Failed to delete comment." });
+  }
+};
+
+//for edit the comment by only user who have sent
+const updateCommentController = async (req, res) => {
+  const { commentId, userId } = req.params;
+  const { context, token } = req.body;
+  console.log("try to edit comment");
+  try {
+    const decoded = await authService.verifyToken(token);
+    const userIdToken = decoded.id.toString();
+    if (userIdToken !== userId) {
+      return res.status(403).json({ error: "Unauthorized action" });
+    }
+    await reviewCommentsService.updateCommentService(
+      commentId,
+      userId,
+      context
+    );
+    return res.status(200).json({ message: "Comment updated successfully." });
+  } catch (error) {
+    console.error("Error updating comment:", error);
+    return res.status(500).json({ message: "Failed to update comment." });
+  }
+};
+
+module.exports = {
+  addCommentController,
+  getCommentsByReviewIdController,
+  deleteCommentController,
+  updateCommentController,
+};

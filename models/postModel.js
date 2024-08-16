@@ -12,7 +12,8 @@ class Post {
     reviwerName,
     likesCount,
     commentsCount,
-    sharesCount
+    sharesCount,
+    index
   ) {
     this.reviewId = reviewId;
     this.bookId = bookId;
@@ -27,6 +28,7 @@ class Post {
     this.likesCount = likesCount;
     this.commentsCount = commentsCount;
     this.sharesCount = sharesCount;
+    this.index = index;
   }
 }
 
