@@ -48,5 +48,10 @@ router.get(
   "/:reviewId/like-count",
   reviewLikesController.getLikeCountController
 );
+const shareController = require('../controllers/shareController');
+
+// Route to handle sharing a review
+router.post('/share', shareController.shareReview);
+router.get('/shared-reviews/:user_id', shareController.getSharedReviewsByUser);
 
 module.exports = router;
