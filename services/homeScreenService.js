@@ -53,7 +53,6 @@ const getHomeScreen = async (userId) => {
             row_review.likesCount,
             row_review.commentsCount,
             row_review.sharesCount,
-            0
         ));
         // boooks
         const query_books = `SELECT * FROM book  ORDER BY RAND() LIMIT 5`;
@@ -71,7 +70,6 @@ const getHomeScreen = async (userId) => {
             row_book.genre,
             row_book.imageUrl,
             row_book.resource,
-            1
         ));
         return { reviews, books} ;
         // return books;
