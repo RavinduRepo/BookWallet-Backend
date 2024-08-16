@@ -212,7 +212,6 @@ const getReviewWithUserId = async (req, res) => {
           reviewDetail.likesCount,
           reviewDetail.commentsCount,
           reviewDetail.sharesCount,
-          0
         )
     );
 

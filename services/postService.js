@@ -42,7 +42,6 @@ GROUP BY reviewed.review_id, reviewed.book_id, reviewed.user_id, book.imageUrl, 
           row.likesCount,
           row.commentsCount,
           row.sharesCount,
-          0
         )
     );
     console.log(posts);
