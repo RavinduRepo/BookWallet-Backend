@@ -9,7 +9,7 @@ const {
 
 // const { getLikesIdByReviewId } = require("../services/reviewLikesService");
 // const { ReviewPost } = require("../controllers/reviewPostController");
-const reviewController  = require("../controllers/reviewController");
+const reviewController = require("../controllers/reviewController");
 // router.post("/reviewpost", ReviewPost); //Not in use
 router.get("/getReviewWithId/:reviewId", getReviewWithId);
 router.get("/getReviews", getReviews);
@@ -27,6 +27,17 @@ router.post("/comments/add", reviewcommentsController.addCommentController);
 router.get(
   "/:reviewId/comments",
   reviewcommentsController.getCommentsByReviewIdController
+);
+// Route to update a comment
+router.put(
+  "/comments/update/:commentId/:userId",
+  reviewcommentsController.updateCommentController
+);
+
+// Route to delete a comment
+router.delete(
+  "/comments/delete/:commentId/:userId",
+  reviewcommentsController.deleteCommentController
 );
 
 // Route to get users who liked a review

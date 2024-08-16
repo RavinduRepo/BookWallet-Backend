@@ -72,4 +72,34 @@ const getCommentsByReviewIdService = async (reviewId) => {
     throw new Error("Error fetching comments: " + error.message);
   }
 };
-module.exports = { addCommentService, getCommentsByReviewIdService };
+
+const deleteCommentService = async (commentId, userId) => {
+  try {
+    const query = `DELETE FROM comments WHERE comment_id = ? AND user_id = ?`;
+    await db.execute(query, [commentId, userId]);
+  } catch (error) {
+    console.log("Error deleting comment from database", error);
+    throw error;
+  }
+};
+
+const updateCommentService = async (commentId, userId, context) => {
+  try {
+    const now = new Date();
+    const date = now.toISOString().split("T")[0];
+    const time = now.toTimeString().split(" ")[0];
+    const query = `UPDATE comments SET context = ?, date = ?, time = ? 
+                  WHERE comment_id = ? AND user_id = ?`;
+    await db.execute(query, [context, date, time, commentId, userId]);
+  } catch (error) {
+    console.log("Error updating comment in database", error);
+    throw error;
+  }
+};
+
+module.exports = {
+  addCommentService,
+  getCommentsByReviewIdService,
+  deleteCommentService,
+  updateCommentService,
+};
