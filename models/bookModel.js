@@ -1,5 +1,5 @@
 class Book {
-    constructor(bookId, title, ISBN10, ISBN13, publishedDate, description, author, totalRating, pages, genre, imageUrl, resource) {
+    constructor(bookId, title, ISBN10, ISBN13, publishedDate, description, author, totalRating, pages, genre, imageUrl, resource, index) {
       this.bookId = bookId;
       this.title = title;
       this.ISBN10 = ISBN10;
@@ -12,6 +12,7 @@ class Book {
       this.genre = genre;
       this.imageUrl = imageUrl;
       this.resource = resource;
+      this.index = index;
     }
   }
   
