@@ -27,6 +27,15 @@ exports.incrementShareCount = async (reviewId, userId) => {
     throw new Error('Failed to increment share count');
   }
 };
+exports.incrementShareCount = async (reviewId, userId) => {
+  try {
+    const query = 'UPDATE shares SET share_count = share_count + 1 WHERE review_id = ? AND user_id = ?';
+    await db.execute(query, [reviewId, userId]);
+  } catch (error) {
+    throw new Error('Failed to increment share count');
+  }
+};
+
 exports.getSharedReviewsByUser = async (userId) => {
   try {
     console.log('Fetching shared reviews for user:', userId); // Log the incoming user ID
@@ -35,6 +44,7 @@ exports.getSharedReviewsByUser = async (userId) => {
       SELECT reviewed.review_id, 
              reviewed.book_id, 
              reviewed.user_id, 
+             s1.user_id AS sharedUserId,   -- Add sharedUserId to the select statement
              book.imageUrl, 
              book.title, 
              book.author, 
@@ -55,7 +65,7 @@ exports.getSharedReviewsByUser = async (userId) => {
       LEFT JOIN shares s2 ON s2.review_id = reviewed.review_id
       INNER JOIN user u2 ON s1.user_id = u2.user_id         -- Join to get the sharer's username
       WHERE s1.user_id = ?
-      GROUP BY reviewed.review_id, reviewed.book_id, reviewed.user_id, book.imageUrl, book.title, book.author, reviewed.context, reviewed.rating, reviewed.date, u1.username, u2.username;
+      GROUP BY reviewed.review_id, reviewed.book_id, reviewed.user_id, s1.user_id, book.imageUrl, book.title, book.author, reviewed.context, reviewed.rating, reviewed.date, u1.username, u2.username;
     `;
 
     console.log('Executing query:', query); // Log the query being executed
@@ -68,3 +78,18 @@ exports.getSharedReviewsByUser = async (userId) => {
   }
 };
 
+exports.getUsersWhoSharedReview = async (reviewId) => {
+  try {
+    const query = `
+      SELECT user.user_id, user.username
+      FROM shares
+      JOIN user ON shares.user_id = user.user_id
+      WHERE shares.review_id = ?
+    `;
+
+    const [rows] = await db.execute(query, [reviewId]);
+    return rows;
+  } catch (error) {
+    throw new Error(`Failed to retrieve users who shared the review: ${error.message}`);
+  }
+};
