@@ -64,5 +64,6 @@ const shareController = require('../controllers/shareController');
 // Route to handle sharing a review
 router.post('/share', shareController.shareReview);
 router.get('/shared-reviews/:user_id', shareController.getSharedReviewsByUser);
+router.get('/:reviewId/shared-users', shareController.getUsersWhoSharedReview);
 
 module.exports = router;
