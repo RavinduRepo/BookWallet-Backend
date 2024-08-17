@@ -34,9 +34,7 @@ const getHomeScreen = async (userId) => {
             reviewed.context, 
             reviewed.rating, 
             reviewed.date, 
-            user.username
-        ORDER BY RAND()
-        LIMIT 5`;
+            user.username`;
  
         const [rows_review] = await db.execute(query_reviews);
         const reviews = rows_review.map(row_review => new Post(
@@ -55,7 +53,7 @@ const getHomeScreen = async (userId) => {
             row_review.sharesCount,
         ));
         // boooks
-        const query_books = `SELECT * FROM book  ORDER BY RAND() LIMIT 5`;
+        const query_books = `SELECT * FROM book`;
         const [rows_book] = await db.execute(query_books);
         const books = rows_book.map(row_book => new Book(
             row_book.bookId,
