@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Default route that responds with a static JSON object
-app.get('/', (req, res) => {
+app.get('/test', (req, res) => {
   res.json({
     message: 'OK',
     status: 200,
