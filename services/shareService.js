@@ -35,6 +35,15 @@ exports.incrementShareCount = async (reviewId, userId) => {
     throw new Error('Failed to increment share count');
   }
 };
+exports.removeShare = async (reviewId, userId) => {
+  try {
+    const query = 'DELETE FROM shares WHERE review_id = ? AND user_id = ?';
+    await db.execute(query, [reviewId, userId]);
+  } catch (error) {
+    throw new Error('Failed to remove share record');
+  }
+};
+
 
 exports.getSharedReviewsByUser = async (userId) => {
   try {
