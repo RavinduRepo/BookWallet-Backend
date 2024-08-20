@@ -14,6 +14,7 @@ const bookRoutes = require("./routes/bookRoutes");
 const wishlistRoutes = require("./routes/wishlistRoutes");
 const bookRecommendRoutes = require("./routes/bookRecommendRoutes");
 const homeScreenroutes = require("./routes/homeScreenRoutes");
+const historyRoutes = require("./routes/historyRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,7 +33,7 @@ app.use("/api/book-review", bookReviewRoutes);
 app.use("/api/users", userfollowRoutes);
 app.use("/api/book", bookRoutes);
 app.use("/api", homeScreenroutes);
-
+app.use("/api/history", historyRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
