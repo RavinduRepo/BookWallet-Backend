@@ -3,7 +3,7 @@ const UserProfile = require("../models/userProfileModel");
 
 const getUserDetails = async (userId) => {
     try {
-      const sql = "SELECT * FROM user WHERE user_id = ?";
+      const sql = "SELECT user.user_id, user.username, user.email, user.description FROM user WHERE user_id = ?";
       const [rows] = await db.execute(sql, [userId]);
   
       if (rows.length > 0) {
@@ -18,7 +18,7 @@ const getUserDetails = async (userId) => {
 
 const getUserProfile = async (userId) => {
   try {
-    const sql = "SELECT user.user_id, user.username, user.email FROM user WHERE user_id = ?";
+    const sql = "SELECT user.user_id, user.username, user.email, user.description FROM user WHERE user_id = ?";
     const [rows] = await db.execute(sql, [userId]);
 
     if (rows.length === 0) {
@@ -29,7 +29,7 @@ const getUserProfile = async (userId) => {
       row.user_id,
       row.username,
       row.email,
-      'I love reading',
+      row.description,
       'imageUrl',
     ));
 
