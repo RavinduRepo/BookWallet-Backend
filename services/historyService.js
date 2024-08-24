@@ -14,7 +14,8 @@ class HistoryService {
         b.author AS authorName,
         r.context AS context,
         r.rating AS rating,
-        r.date AS date,
+        h.date AS date,          -- Fetching date from history
+        h.time AS time,          -- Fetching time from history
         u.username AS reviewerName,
         (
           SELECT COUNT(*) FROM likes l WHERE l.review_id = r.review_id
@@ -24,19 +25,17 @@ class HistoryService {
         ) AS commentsCount,
         (
           SELECT COUNT(*) FROM shares s WHERE s.review_id = r.review_id
-        ) AS sharesCount,
-        h.search_index AS searchIndex
+        ) AS sharesCount
       FROM history h
       JOIN reviewed r ON h.relevent_id = r.review_id
       JOIN book b ON r.book_id = b.book_id
       JOIN user u ON r.user_id = u.user_id
-      WHERE h.user_id = ? AND h.search_index = 0
+      WHERE h.user_id = ? AND h.search_index = 0  -- Filtering by search_index
       ORDER BY h.date DESC, h.time DESC;
     `;
 
     const [rows] = await db.query(query, [userId]);
 
-    // Return an array of objects containing the Post instance and the searchIndex
     return rows.map((row) => ({
       post: new Post(
         row.reviewId,
@@ -47,13 +46,14 @@ class HistoryService {
         row.authorName,
         row.context,
         row.rating,
-        row.date,
+        row.date, // Attach date
         row.reviewerName,
         row.likesCount,
         row.commentsCount,
         row.sharesCount
       ),
-      searchIndex: row.searchIndex,
+      date: row.date, // Attach date separately
+      time: row.time, // Attach time separately
     }));
   }
 
@@ -72,16 +72,16 @@ class HistoryService {
         b.genre AS genre,
         b.imageUrl AS imageUrl,
         b.resource AS resource,
-        h.search_index AS searchIndex
+        h.date AS date,          -- Fetching date from history
+        h.time AS time           -- Fetching time from history
       FROM history h
       JOIN book b ON h.relevent_id = b.book_id
-      WHERE h.user_id = ? AND h.search_index = 1
+      WHERE h.user_id = ? AND h.search_index = 1  -- Filtering by search_index
       ORDER BY h.date DESC, h.time DESC;
     `;
 
     const [rows] = await db.query(query, [userId]);
 
-    // Return an array of objects containing the Book instance and the searchIndex
     return rows.map((row) => ({
       book: new Book(
         row.bookId,
@@ -97,31 +97,69 @@ class HistoryService {
         row.imageUrl,
         row.resource
       ),
-      searchIndex: row.searchIndex,
+      date: row.date, // Attach date separately
+      time: row.time, // Attach time separately
     }));
   }
+
   async getUserDetailsByUserId(userId) {
     const query = `
       SELECT 
         u.user_id AS userId,
         u.username AS username,
-        u.imageUrl AS imageUrl
+        u.imageUrl AS imageUrl,
+        h.date AS date,          -- Fetching date from history
+        h.time AS time           -- Fetching time from history
       FROM history h
       JOIN user u ON h.relevent_id = u.user_id
-      WHERE h.user_id = ? AND h.search_index = 2
+      WHERE h.user_id = ? AND h.search_index = 2  -- Filtering by search_index
       ORDER BY h.date DESC, h.time DESC;
     `;
 
     const [rows] = await db.query(query, [userId]);
 
     return rows.map((row) => ({
-      searchIndex: 2,
       userDetails: {
         userId: row.userId,
         username: row.username,
         imageUrl: "imageUrl", //row.imageUrl,
       },
+      date: row.date, // Attach date separately
+      time: row.time, // Attach time separately
     }));
+  }
+
+  async getAllItems(userId) {
+    const reviewsPromise = this.getReviewsByUserId(userId);
+    const booksPromise = this.getBooksByUserId(userId);
+    const userDetailsPromise = this.getUserDetailsByUserId(userId);
+
+    const [reviews, books, userDetails] = await Promise.all([
+      reviewsPromise,
+      booksPromise,
+      userDetailsPromise,
+    ]);
+
+    // Combine all items into a single array with an added 'type' field for differentiation
+    const combinedItems = [
+      ...reviews.map((item) => ({ ...item, type: "review" })),
+      ...books.map((item) => ({ ...item, type: "book" })),
+      ...userDetails.map((item) => ({ ...item, type: "user" })),
+    ];
+
+    // Sort by date and time in descending order using fetched date and time
+    combinedItems.sort((a, b) => {
+      const dateComparison =
+        new Date(b.date).getTime() - new Date(a.date).getTime();
+      if (dateComparison === 0) {
+        const timeA = a.time ? new Date(`1970-01-01T${a.time}Z`).getTime() : 0;
+        const timeB = b.time ? new Date(`1970-01-01T${b.time}Z`).getTime() : 0;
+        return timeB - timeA;
+      }
+      return dateComparison;
+    });
+
+    return combinedItems;
   }
 }
 

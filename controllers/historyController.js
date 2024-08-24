@@ -48,6 +48,18 @@ class HistoryController {
         .json({ error: "An error occurred while fetching user details" });
     }
   }
+  async getAllItems(req, res) {
+    try {
+      const { userId } = req.params;
+      const allItems = await historyService.getAllItems(userId);
+      res.status(200).json(allItems);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while fetching all items" });
+    }
+  }
 }
 
 module.exports = new HistoryController();
