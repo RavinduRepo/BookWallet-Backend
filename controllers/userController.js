@@ -1,9 +1,9 @@
 const db = require("../config/dbConfig");
 const services = require("../services/userServices");
 
-const createUser = async (username, email, password) => {
-  const sql = "INSERT INTO user (username, email, password) VALUES (?, ?, ?)";
-  const [result] = await db.execute(sql, [username, email, password]);
+const createUser = async (username, email, password, description) => {
+  const sql = "INSERT INTO user (username, email, password, description) VALUES (?, ?, ?, ?)";
+  const [result] = await db.execute(sql, [username, email, password, description]);
   console.log("logint", result);
 
   return result.insertId;
@@ -88,9 +88,29 @@ const updatePassword = async (req, res) => {
   }
 };
 
-const updateAllDetails = async (username, email, password, userId) => {
-  const sql = "UPDATE user SET username = ?, email = ?, password = ? WHERE user_id = ?";  
-  await db.execute(sql, [username, email, password, userId]);
+const updateDescription = async (req, res) => {
+  const userId = req.params.id;
+  const description = req.body.description;
+
+  try {
+    const sql = "UPDATE user SET description = ? WHERE user_id = ?";
+    const [result] = await db.execute(sql, [description, userId]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "description updated successfully" });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
+
+const updateAllDetails = async (username, email, password, description, userId) => {
+  const sql = "UPDATE user SET username = ?, email = ?, password = ?, description = ? WHERE user_id = ?";
+  await db.execute(sql, [username, email, password, description, userId]);
 };
 
 const getUserProfile = async (req, res) => {
@@ -116,6 +136,7 @@ module.exports = {
   updateUsername,
   updateEmail,
   updatePassword,
+  updateDescription,
   updateAllDetails,
   getUserProfile
 };

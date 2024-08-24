@@ -14,6 +14,8 @@ router.put("/updateemail/:id", userController.updateEmail);
 
 // Update password
 router.put("/updatepassword/:id", userController.updatePassword);
+// Update description
+router.put("/updatedescription/:id", userController.updateDescription);
 
 module.exports = router;
 
