@@ -27,13 +27,13 @@ app.use("/api/image", imageRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/googleapi", googleAPIRoutes);
 app.use("/api/user", userRoutes, bookRecommendRoutes);
-// app.use("/api/reviews", reviewPostRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/book-review", bookReviewRoutes);
 app.use("/api/users", userfollowRoutes);
 app.use("/api/book", bookRoutes);
 app.use("/api", homeScreenroutes);
 app.use("/api/history", historyRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

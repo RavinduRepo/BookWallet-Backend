@@ -1,13 +1,14 @@
 const shareService = require('../services/shareService');
 const authService = require('../services/authService'); 
 
+
 exports.shareReview = async (req, res) => {
   const { review_id, user_id } = req.body;
   const token = req.headers.authorization?.split(' ')[1]; // Extract the token from the Authorization header
 
-  if (!token) {
-    return res.status(401).json({ message: 'Authorization token is required' });
-  }
+  // if (!token) {
+  //   return res.status(401).json({ message: 'Authorization token is required' });
+  // }
 
   try {
     // Decode and verify the token
@@ -15,26 +16,35 @@ exports.shareReview = async (req, res) => {
     const tokenUserId = decoded.id.toString();
 
     // Check if the token user ID matches the user ID from the request
-    if (tokenUserId !== user_id) {
-      return res.status(403).json({ message: 'Unauthorized action' });
-    }
+    // if (tokenUserId !== user_id) {
+    //   return res.status(403).json({ message: 'Unauthorized action' });
+    // }
 
     // Check if the review has already been shared by the user
     const existingShare = await shareService.findShare(review_id, user_id);
     if (existingShare) {
-      // If the review was already shared, just increment the share count
-      await shareService.incrementShareCount(review_id, user_id);
+      // If the review was already shared, remove the share record
+      await shareService.removeShare(review_id, user_id);
+      res.status(200).json({ message: 'Review share removed successfully' });
     } else {
       // If the review was not shared before, create a new share record
       await shareService.createShare(review_id, user_id);
+      res.status(200).json({ message: 'Review shared successfully' });
     }
-
-    res.status(200).json({ message: 'Review shared successfully' });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to share review', details: error.message });
+    res.status(500).json({ error: 'Failed to share or remove review', details: error.message });
   }
 };
+exports.checkIfShared = async (req, res) => {
+  const { review_id, user_id } = req.body;
 
+  try {
+    const isShared = await shareService.findShare(review_id, user_id);
+    res.status(200).json({ shared: isShared });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to check if review is shared', details: error.message });
+  }
+};
 
 exports.getSharedReviewsByUser = async (req, res) => {
   const { user_id } = req.params;
