@@ -9,16 +9,31 @@ exports.findShare = async (reviewId, userId) => {
     throw new Error('Failed to find share record');
   }
 };
-
+exports.isReviewShared = async (reviewId, userId) => {
+  try {
+    const query = 'SELECT * FROM shares WHERE review_id = ? AND user_id = ?';
+    const [result] = await db.execute(query, [reviewId, userId]);
+    return result.length > 0; // Returns true if shared, false otherwise
+  } catch (error) {
+    throw new Error('Failed to check if review is shared');
+  }
+};
 exports.createShare = async (reviewId, userId) => {
   try {
-    const query = 'INSERT INTO shares (review_id, user_id) VALUES (?, ?)';
-    await db.execute(query, [reviewId, userId]);
+    // Get the current date and time
+    const now = new Date();
+    const date = now.toISOString().split("T")[0]; // YYYY-MM-DD
+    const time = now.toTimeString().split(" ")[0]; // HH:MM:SS
+
+    const query = `
+      INSERT INTO shares (review_id, user_id, date, time) 
+      VALUES (?, ?, ?, ?)
+    `;
+    await db.execute(query, [reviewId, userId, date, time]);
   } catch (error) {
     throw new Error('Failed to create share record');
   }
 };
-
 exports.incrementShareCount = async (reviewId, userId) => {
   try {
     const query = 'UPDATE shares SET share_count = share_count + 1 WHERE review_id = ? AND user_id = ?';
@@ -100,5 +115,40 @@ exports.getUsersWhoSharedReview = async (reviewId) => {
     return rows;
   } catch (error) {
     throw new Error(`Failed to retrieve users who shared the review: ${error.message}`);
+  }
+};
+
+exports.getReviewsSharedByUserOrderofTime = async (userId) => {
+  try {
+    const query = `
+      SELECT reviewed.review_id, 
+             reviewed.book_id, 
+             reviewed.user_id, 
+             book.imageUrl, 
+             book.title, 
+             book.author, 
+             reviewed.context, 
+             reviewed.rating, 
+             shares.date, 
+             shares.time,
+             u1.username AS reviewer_username,  
+             COUNT(DISTINCT likes.user_id) AS likesCount,
+             COUNT(DISTINCT comments.comment_id) AS commentsCount,
+             COUNT(DISTINCT shares2.share_id) AS sharesCount
+      FROM shares
+      INNER JOIN reviewed ON shares.review_id = reviewed.review_id
+      INNER JOIN user u1 ON reviewed.user_id = u1.user_id
+      INNER JOIN book ON reviewed.book_id = book.book_id
+      LEFT JOIN likes ON likes.review_id = reviewed.review_id
+      LEFT JOIN comments ON comments.review_id = reviewed.review_id
+      LEFT JOIN shares shares2 ON shares2.review_id = reviewed.review_id
+      WHERE shares.user_id = ?
+      GROUP BY reviewed.review_id, reviewed.book_id, reviewed.user_id, shares.date, shares.time, book.imageUrl, book.title, book.author, reviewed.context, reviewed.rating, u1.username
+      ORDER BY shares.date DESC, shares.time DESC;
+    `;
+    const [rows] = await db.execute(query, [userId]);
+    return rows;
+  } catch (error) {
+    throw new Error('Failed to fetch shared reviews for the user: ' + error.message);
   }
 };

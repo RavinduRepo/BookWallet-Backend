@@ -39,13 +39,12 @@ exports.checkIfShared = async (req, res) => {
   const { review_id, user_id } = req.body;
 
   try {
-    const isShared = await shareService.findShare(review_id, user_id);
+    const isShared = await shareService.isReviewShared(review_id, user_id);
     res.status(200).json({ shared: isShared });
   } catch (error) {
     res.status(500).json({ error: 'Failed to check if review is shared', details: error.message });
   }
 };
-
 exports.getSharedReviewsByUser = async (req, res) => {
   const { user_id } = req.params;
   const token = req.headers.authorization?.split(' ')[1]; // Extract the token from the Authorization header
@@ -76,6 +75,16 @@ exports.getUsersWhoSharedReview = async (req, res) => {
     const reviewId = req.params.reviewId;
     const users = await shareService.getUsersWhoSharedReview(reviewId);
     res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+exports.getReviewsSharedByUserOrderofTime = async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const sharedReviews = await shareService.getReviewsSharedByUserOrderofTime(userId);
+    res.status(200).json(sharedReviews);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
