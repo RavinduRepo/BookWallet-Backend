@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { createUser, findUserByEmail, updateAllDetails } = require('../controllers/userController');
 const { signupDetailsSchema, updateDetailsSchema } = require('../middlewares/authMiddleware');
 
-const signUp = async (username, email, password) => {
+const signUp = async (username, email, password, description) => {
     // Combine the parameters into an object
     const userDetails = { username, email, password };
 
@@ -16,9 +16,9 @@ const signUp = async (username, email, password) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userId = await createUser(username, email, hashedPassword);
+    const userId = await createUser(username, email, hashedPassword, description);
 
-    return { id: userId, username, email };
+    return { userId, username, email };
 };
 
 const signIn = async (email, password) => {
@@ -42,7 +42,7 @@ const verifyToken = (token) => {
   });
 };
 
-const verifyUpdateDetails = async (username, email, password, userId) => {
+const verifyUpdateDetails = async (username, email, password, description, userId) => {
   // Combine the parameters into an object
   const userDetails = { username, email, password };
 
@@ -55,9 +55,9 @@ const verifyUpdateDetails = async (username, email, password, userId) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  await updateAllDetails(username, email, hashedPassword, userId);
+  await updateAllDetails(username, email, hashedPassword, description, userId);
 
-  return { userId, username, email };
+  return { userId, username, email, description };
 };
 
 module.exports = { signUp, signIn , verifyToken, verifyUpdateDetails };

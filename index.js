@@ -27,14 +27,17 @@ app.use("/api/image", imageRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/googleapi", googleAPIRoutes);
 app.use("/api/user", userRoutes, bookRecommendRoutes);
-// app.use("/api/reviews", reviewPostRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/book-review", bookReviewRoutes);
 app.use("/api/users", userfollowRoutes);
 app.use("/api/book", bookRoutes);
 app.use("/api", homeScreenroutes);
 app.use("/api/history", historyRoutes);
+<<<<<<< HEAD
 app.use("/api/groups",groupRoutes);
+=======
+
+>>>>>>> 194e61df2553822f34adea33c0385faff8c11d47
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

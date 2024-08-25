@@ -1,6 +1,8 @@
 const axios = require("axios");
 const Book = require("../models/googleBookModel"); // Ensure correct path to googleBook.js
+const dotenv = require("dotenv");
 
+dotenv.config();
 // Google Books API endpoint
 const GOOGLE_BOOKS_API = "https://www.googleapis.com/books/v1/volumes";
 
@@ -18,6 +20,7 @@ const googleAPISearch = async (req, res) => {
         startIndex: (index - 1) * 10,
         maxResults: 10, // Example: Fetching 10 results per page
         printType: "books", // Ensure only books are returned
+        key: process.env.KEY
       },
     });
 
