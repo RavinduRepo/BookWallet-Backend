@@ -33,11 +33,7 @@ app.use("/api/users", userfollowRoutes);
 app.use("/api/book", bookRoutes);
 app.use("/api", homeScreenroutes);
 app.use("/api/history", historyRoutes);
-<<<<<<< HEAD
 app.use("/api/groups",groupRoutes);
-=======
-
->>>>>>> 194e61df2553822f34adea33c0385faff8c11d47
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
