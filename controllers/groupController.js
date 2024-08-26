@@ -1,4 +1,5 @@
 const pool = require('../config/dbConfig'); // Adjust the path if necessary
+const GroupService = require('../services/groupServices');
 
 exports.getAllGroups = async (req, res) => {
   try {
@@ -31,6 +32,28 @@ exports.getGroupMembers = async (req, res) => {
       res.status(500).json({ message: 'Database error', error: err });
     }
   };
+  
+    exports.createGroup= async (req, res) => {
+      try {
+        const { group_name, group_description, group_image_url, user_id } = req.body;
+  
+        // Validate the inputs
+        if (!group_name || !group_description || !group_image_url || !user_id) {
+          return res.status(400).json({ message: 'All fields are required.' });
+        }
+  
+        // Call the service to create the group and assign the user as admin
+        const group = await GroupService.createGroup(group_name, group_description, group_image_url, user_id);
+  
+        res.status(200).json({ message: 'Group created successfully', group });
+      } catch (error) {
+        console.error('Error creating group:', error);
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    }
+  
+  
+
 
   
   

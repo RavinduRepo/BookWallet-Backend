@@ -7,38 +7,39 @@ const getHomeScreen = async (userId, page) => {
     try {
         const limit = 10;
         const offset = (page - 1) * limit;
-        // reviews
-        const query_reviews = 
-        `SELECT reviewed.review_id, 
-            reviewed.book_id, 
-            reviewed.user_id, 
-            book.imageUrl, 
-            book.title, 
-            book.author, 
-            reviewed.context, 
-            reviewed.rating, 
-            reviewed.date,
-            user.username,
-        COUNT(DISTINCT likes.user_id) AS likesCount,
-        COUNT(DISTINCT comments.comment_id) AS commentsCount,
-        COUNT(DISTINCT shares.share_id) AS sharesCount
-        FROM reviewed
-        INNER JOIN user ON reviewed.user_id = user.user_id
-        INNER JOIN book ON reviewed.book_id = book.book_id
-        LEFT JOIN likes ON likes.review_id = reviewed.review_id
-        LEFT JOIN comments ON comments.review_id = reviewed.review_id
-        LEFT JOIN shares ON shares.review_id = reviewed.review_id
-        GROUP BY reviewed.review_id, 
-            reviewed.book_id, 
-            reviewed.user_id, 
-            book.imageUrl, 
-            book.title, 
-            book.author, 
-            reviewed.context, 
-            reviewed.rating, 
-            reviewed.date, 
-            user.username
-        LIMIT ? OFFSET ?`;
+        
+        // Fetch reviews
+        const query_reviews = `
+            SELECT reviewed.review_id, 
+                   reviewed.book_id, 
+                   reviewed.user_id, 
+                   book.imageUrl, 
+                   book.title, 
+                   book.author, 
+                   reviewed.context, 
+                   reviewed.rating, 
+                   reviewed.date,
+                   user.username,
+                   COUNT(DISTINCT likes.user_id) AS likesCount,
+                   COUNT(DISTINCT comments.comment_id) AS commentsCount,
+                   COUNT(DISTINCT shares.share_id) AS sharesCount
+            FROM reviewed
+            INNER JOIN user ON reviewed.user_id = user.user_id
+            INNER JOIN book ON reviewed.book_id = book.book_id
+            LEFT JOIN likes ON likes.review_id = reviewed.review_id
+            LEFT JOIN comments ON comments.review_id = reviewed.review_id
+            LEFT JOIN shares ON shares.review_id = reviewed.review_id
+            GROUP BY reviewed.review_id, 
+                     reviewed.book_id, 
+                     reviewed.user_id, 
+                     book.imageUrl, 
+                     book.title, 
+                     book.author, 
+                     reviewed.context, 
+                     reviewed.rating, 
+                     reviewed.date, 
+                     user.username
+            LIMIT ? OFFSET ?`;
  
         const [rows_review] = await db.execute(query_reviews, [limit, offset]);
         const reviews = rows_review.map(row_review => new Post(
@@ -56,7 +57,8 @@ const getHomeScreen = async (userId, page) => {
             row_review.commentsCount,
             row_review.sharesCount,
         ));
-        // books
+        
+        // Fetch books
         const query_books = `SELECT * FROM book LIMIT ? OFFSET ?`;
         const [rows_book] = await db.execute(query_books, [limit, offset]);
         const books = rows_book.map(row_book => new Book(
@@ -73,44 +75,50 @@ const getHomeScreen = async (userId, page) => {
             row_book.imageUrl,
             row_book.resource,
         ));
-        // shares
-        const query_shareReviews1 = `SELECT shares.review_id, user.username AS sharerUsername, shares.user_id AS sharerUserId FROM shares INNER JOIN user ON user.user_id = shares.user_id`;
-        const [ sharedReviews1 ] = await db.query(query_shareReviews1);
+        
+        // Fetch shares
+        const query_shareReviews1 = `SELECT shares.review_id, user.username AS sharerUsername, shares.user_id AS sharerUserId 
+                                     FROM shares 
+                                     INNER JOIN user ON user.user_id = shares.user_id`;
+        const [sharedReviews1] = await db.query(query_shareReviews1);
         const sharedReviewIds = sharedReviews1.map(row => row.review_id);
+
         if (sharedReviewIds.length > 0) {
-            const query_shareReviews2 = 
-            `SELECT reviewed.review_id, 
-                reviewed.book_id, 
-                reviewed.user_id, 
-                book.imageUrl, 
-                book.title, 
-                book.author, 
-                reviewed.context, 
-                reviewed.rating, 
-                reviewed.date,
-                user.username,
-                COUNT(DISTINCT likes.user_id) AS likesCount,
-                COUNT(DISTINCT comments.comment_id) AS commentsCount,
-                COUNT(DISTINCT shares.share_id) AS sharesCount
-            FROM reviewed
-            INNER JOIN user ON reviewed.user_id = user.user_id
-            INNER JOIN book ON reviewed.book_id = book.book_id
-            LEFT JOIN likes ON likes.review_id = reviewed.review_id
-            LEFT JOIN comments ON comments.review_id = reviewed.review_id
-            INNER JOIN shares ON reviewed.review_id = shares.review_id
-            WHERE reviewed.review_id IN (${sharedReviewIds.join(',')})
-            GROUP BY reviewed.review_id, 
-                reviewed.book_id, 
-                reviewed.user_id, 
-                book.imageUrl, 
-                book.title, 
-                book.author, 
-                reviewed.context, 
-                reviewed.rating, 
-                reviewed.date, 
-                user.username
-            LIMIT ? OFFSET ?`;
-            const [sharedReviews2] = await db.execute(query_shareReviews2, [limit, offset]);
+            // Use placeholders to safely include sharedReviewIds in the query
+            const query_shareReviews2 = `
+                SELECT reviewed.review_id, 
+                       reviewed.book_id, 
+                       reviewed.user_id, 
+                       book.imageUrl, 
+                       book.title, 
+                       book.author, 
+                       reviewed.context, 
+                       reviewed.rating, 
+                       reviewed.date,
+                       user.username,
+                       COUNT(DISTINCT likes.user_id) AS likesCount,
+                       COUNT(DISTINCT comments.comment_id) AS commentsCount,
+                       COUNT(DISTINCT shares.share_id) AS sharesCount
+                FROM reviewed
+                INNER JOIN user ON reviewed.user_id = user.user_id
+                INNER JOIN book ON reviewed.book_id = book.book_id
+                LEFT JOIN likes ON likes.review_id = reviewed.review_id
+                LEFT JOIN comments ON comments.review_id = reviewed.review_id
+                INNER JOIN shares ON reviewed.review_id = shares.review_id
+                WHERE reviewed.review_id IN (${sharedReviewIds.map(() => '?').join(',')})
+                GROUP BY reviewed.review_id, 
+                         reviewed.book_id, 
+                         reviewed.user_id, 
+                         book.imageUrl, 
+                         book.title, 
+                         book.author, 
+                         reviewed.context, 
+                         reviewed.rating, 
+                         reviewed.date, 
+                         user.username
+                LIMIT ? OFFSET ?`;
+            
+            const [sharedReviews2] = await db.execute(query_shareReviews2, [...sharedReviewIds, limit, offset]);
             const shares = sharedReviews2.map(row => {
                 const shareDetails = sharedReviews1.find(share => share.review_id === row.review_id);
                 const reviews = new Post(
@@ -136,12 +144,14 @@ const getHomeScreen = async (userId, page) => {
                     'image path',
                 );
             });
-            return { reviews, books, shares};
+            return { reviews, books, shares };
+        } else {
+            return { reviews, books, shares: [] };
         }
-    } catch(err) {
+    } catch (err) {
         console.log('Error fetching reviews or books or shares from database', err);
         throw err;
     }
-}
+};
 
 module.exports = { getHomeScreen };
