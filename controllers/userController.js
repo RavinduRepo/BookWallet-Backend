@@ -1,9 +1,16 @@
 const db = require("../config/dbConfig");
 const services = require("../services/userServices");
+const authService = require("../services/authService");
 
 const createUser = async (username, email, password, description) => {
-  const sql = "INSERT INTO user (username, email, password, description) VALUES (?, ?, ?, ?)";
-  const [result] = await db.execute(sql, [username, email, password, description]);
+  const sql =
+    "INSERT INTO user (username, email, password, description) VALUES (?, ?, ?, ?)";
+  const [result] = await db.execute(sql, [
+    username,
+    email,
+    password,
+    description,
+  ]);
   console.log("logint", result);
 
   return result.insertId;
@@ -107,25 +114,37 @@ const updateDescription = async (req, res) => {
   }
 };
 
-
-const updateAllDetails = async (username, email, password, description, userId) => {
-  const sql = "UPDATE user SET username = ?, email = ?, password = ?, description = ? WHERE user_id = ?";
+const updateAllDetails = async (
+  username,
+  email,
+  password,
+  description,
+  userId
+) => {
+  const sql =
+    "UPDATE user SET username = ?, email = ?, password = ?, description = ? WHERE user_id = ?";
   await db.execute(sql, [username, email, password, description, userId]);
 };
 
 const getUserProfile = async (req, res) => {
-const userId = parseInt(req.params.id);
+  const userId = parseInt(req.params.id);
+  const token = req.headers.authorization;
+  console.log("hi");
+  console.log(token);
 
   try {
-    const user = await services.getUserProfile(userId);
+    decoded = await authService.verifyToken(token);
+    loggedInUserId = decoded.id;
+    const user = await services.getUserProfile(userId, loggedInUserId);
+    console.log("hi");
 
     if (user) {
       res.json(user);
     } else {
       res.status(404).json({ message: "User not found" });
     }
-    } catch (err) {
-      res.status(500).json({ message: "Database error", error: err.message });
+  } catch (err) {
+    res.status(500).json({ message: "Database error", error: err.message });
   }
 };
 
@@ -138,11 +157,8 @@ module.exports = {
   updatePassword,
   updateDescription,
   updateAllDetails,
-  getUserProfile
+  getUserProfile,
 };
-
-
-
 
 // const updateUsername = (userId, username) => {
 //   return db.query("UPDATE user SET username = ? WHERE user_id = ?", [
