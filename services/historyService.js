@@ -27,7 +27,7 @@ class HistoryService {
           SELECT COUNT(*) FROM shares s WHERE s.review_id = r.review_id
         ) AS sharesCount
       FROM history h
-      JOIN reviewed r ON h.relevent_id = r.review_id
+      JOIN reviewed r ON h.relevant_id = r.review_id
       JOIN book b ON r.book_id = b.book_id
       JOIN user u ON r.user_id = u.user_id
       WHERE h.user_id = ? AND h.search_index = 0  -- Filtering by search_index
@@ -75,7 +75,7 @@ class HistoryService {
         h.date AS date,          -- Fetching date from history
         h.time AS time           -- Fetching time from history
       FROM history h
-      JOIN book b ON h.relevent_id = b.book_id
+      JOIN book b ON h.relevant_id = b.book_id
       WHERE h.user_id = ? AND h.search_index = 1  -- Filtering by search_index
       ORDER BY h.date DESC, h.time DESC;
     `;
@@ -111,7 +111,7 @@ class HistoryService {
         h.date AS date,          -- Fetching date from history
         h.time AS time           -- Fetching time from history
       FROM history h
-      JOIN user u ON h.relevent_id = u.user_id
+      JOIN user u ON h.relevant_id = u.user_id
       WHERE h.user_id = ? AND h.search_index = 2  -- Filtering by search_index
       ORDER BY h.date DESC, h.time DESC;
     `;
