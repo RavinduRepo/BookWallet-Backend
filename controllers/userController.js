@@ -2,13 +2,14 @@ const db = require("../config/dbConfig");
 const services = require("../services/userServices");
 const authService = require("../services/authService");
 
-const createUser = async (username, email, password, description) => {
+const createUser = async (username, email, password, imageUrl, description) => {
   const sql =
-    "INSERT INTO user (username, email, password, description) VALUES (?, ?, ?, ?)";
+    "INSERT INTO user (username, email, password, imageUrl, description) VALUES (?, ?, ?, ?, ?)";
   const [result] = await db.execute(sql, [
     username,
     email,
     password,
+    imageUrl,
     description,
   ]);
   console.log("logint", result);
