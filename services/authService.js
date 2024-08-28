@@ -10,7 +10,7 @@ const {
   updateDetailsSchema,
 } = require("../middlewares/authMiddleware");
 
-const signUp = async (username, email, password, description) => {
+const signUp = async (username, email, password, imageUrl, description) => {
   // Combine the parameters into an object
   const userDetails = { username, email, password };
 
@@ -23,7 +23,7 @@ const signUp = async (username, email, password, description) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const userId = await createUser(username, email, hashedPassword, description);
+  const userId = await createUser(username, email, hashedPassword, imageUrl, description);
 
   return { userId, username, email };
 };

@@ -4,7 +4,7 @@ const UserProfile = require("../models/userProfileModel");
 const getUserDetails = async (userId) => {
   try {
     const sql =
-      "SELECT user.user_id, user.username, user.email, user.description FROM user WHERE user_id = ?";
+      "SELECT user.user_id, user.username, user.email, user.imageUrl, user.description FROM user WHERE user_id = ?";
     const [rows] = await db.execute(sql, [userId]);
 
     if (rows.length > 0) {
