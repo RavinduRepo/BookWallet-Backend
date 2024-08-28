@@ -161,6 +161,50 @@ class HistoryService {
 
     return combinedItems;
   }
-}
 
+  async insertReviewHistory(user_id, relevant_id) {
+    // Get the current date and time
+    const now = new Date();
+    const date = now.toISOString().split("T")[0]; // Extract date in YYYY-MM-DD format
+    const time = now.toTimeString().split(" ")[0]; // Extract time in HH:MM:SS format
+
+    // Prepare the SQL query with placeholders
+    const query = `
+      INSERT INTO history (user_id, relevant_id, search_index, date, time)
+      VALUES (?, ?, 0, ?, ?)ON DUPLICATE KEY UPDATE 
+      date = VALUES(date), 
+      time = VALUES(time)
+    `;
+
+    try {
+      // Execute the query with parameters
+      await db.query(query, [user_id, relevant_id, date, time]);
+    } catch (error) {
+      // Handle and throw error if the query fails
+      throw new Error("Failed to insert review history");
+    }
+  }
+  async insertBookHistory(loggedInUserId, relevant_id) {
+    // Get the current date and time
+    const now = new Date();
+    const date = now.toISOString().split("T")[0]; // Extract date in YYYY-MM-DD format
+    const time = now.toTimeString().split(" ")[0]; // Extract time in HH:MM:SS format
+
+    // Prepare the SQL query with placeholders
+    const query = `
+      INSERT INTO history (user_id, relevant_id, search_index, date, time)
+      VALUES (?, ?, 1, ?, ?)ON DUPLICATE KEY UPDATE 
+      date = VALUES(date), 
+      time = VALUES(time)
+    `;
+
+    try {
+      // Execute the query with parameters
+      await db.query(query, [loggedInUserId, relevant_id, date, time]);
+    } catch (error) {
+      // Handle and throw error if the query fails
+      throw new Error("Failed to insert book history");
+    }
+  }
+}
 module.exports = new HistoryService();
