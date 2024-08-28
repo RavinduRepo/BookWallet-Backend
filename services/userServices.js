@@ -40,21 +40,22 @@ const getUserProfile = async (userId, loggedInUserId) => {
 
     console.log(userprofile);
 
-    // Get current date and time from the server
-    const currentDate = new Date();
-    const date = currentDate.toISOString().split("T")[0]; // yyyy-mm-dd
-    const time = currentDate.toTimeString().split(" ")[0]; // hh:mm:ss
+    // Check if userId is different from loggedInUserId
+    if (userId !== loggedInUserId) {
+      // Get current date and time from the server
+      const currentDate = new Date();
+      const date = currentDate.toISOString().split("T")[0]; // yyyy-mm-dd
+      const time = currentDate.toTimeString().split(" ")[0]; // hh:mm:ss
 
-    // Insert into history table
-    const historySql = `
-  INSERT INTO history (user_id, relevant_id, search_index, date, time)
-  VALUES (?, ?, 2, ?, ?)
-  ON DUPLICATE KEY UPDATE 
-    date = VALUES(date), 
-    time = VALUES(time)
-`;
-    console.log("line 53");
-    await db.execute(historySql, [loggedInUserId, userId, date, time]);
+      // Insert into history table
+      const historySql = `
+      INSERT INTO history (user_id, relevant_id, search_index, date, time)
+      VALUES (?, ?, 2, ?, ?)
+      ON DUPLICATE KEY UPDATE 
+      date = VALUES(date), 
+      time = VALUES(time)`;
+      await db.execute(historySql, [loggedInUserId, userId, date, time]);
+    }
 
     return userprofile;
   } catch (err) {
