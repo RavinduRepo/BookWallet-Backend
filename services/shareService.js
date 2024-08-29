@@ -1,4 +1,6 @@
 const db = require("../config/dbConfig"); // Adjust the path based on your project structure
+const Post = require("../models/postModel");
+const Share = require("../models/shareModel");
 
 exports.findShare = async (reviewId, userId) => {
   try {
@@ -150,5 +152,138 @@ exports.getReviewsSharedByUserOrderofTime = async (userId) => {
     return rows;
   } catch (error) {
     throw new Error('Failed to fetch shared reviews for the user: ' + error.message);
+  }
+};
+
+
+
+exports.getAllUserActivitiesByTimeOrder = async (userId) => {
+  try {
+    // Query to get the reviews shared by the user
+    const sharedQuery = `
+      SELECT 
+        reviewed.review_id AS reviewId, 
+        reviewed.book_id AS bookId, 
+        reviewed.user_id AS userId, 
+        book.imageUrl AS imagePath, 
+        book.title AS bookName, 
+        book.author AS authorName, 
+        reviewed.context AS context, 
+        reviewed.rating AS rating, 
+        shares.date AS date, 
+        shares.time AS time,
+        u1.username AS reviewerName,  
+        u2.username AS sharerUsername,
+        COUNT(DISTINCT likes.user_id) AS likesCount,
+        COUNT(DISTINCT comments.comment_id) AS commentsCount,
+        COUNT(DISTINCT shares2.share_id) AS sharesCount
+      FROM shares
+      INNER JOIN reviewed ON shares.review_id = reviewed.review_id
+      INNER JOIN user u1 ON reviewed.user_id = u1.user_id
+      INNER JOIN book ON reviewed.book_id = book.book_id
+      LEFT JOIN likes ON likes.review_id = reviewed.review_id
+      LEFT JOIN comments ON comments.review_id = reviewed.review_id
+      LEFT JOIN shares shares2 ON shares2.review_id = reviewed.review_id
+      INNER JOIN user u2 ON shares.user_id = u2.user_id
+      WHERE shares.user_id = ?
+      GROUP BY reviewed.review_id, reviewed.book_id, reviewed.user_id, shares.date, shares.time, book.imageUrl, book.title, book.author, reviewed.context, reviewed.rating, u1.username, u2.username
+      ORDER BY shares.date DESC, shares.time DESC;
+    `;
+
+    // Query to get the reviews posted by the user
+    const reviewedQuery = `
+      SELECT 
+        reviewed.review_id AS reviewId, 
+        reviewed.book_id AS bookId, 
+        reviewed.user_id AS userId, 
+        book.imageUrl AS imagePath, 
+        book.title AS bookName, 
+        book.author AS authorName, 
+        reviewed.context AS context, 
+        reviewed.rating AS rating, 
+        reviewed.date AS date, 
+        '00:00:00' AS time,  -- Use a default time for reviewed posts if not available
+        u1.username AS reviewerName,  
+        COUNT(DISTINCT likes.user_id) AS likesCount,
+        COUNT(DISTINCT comments.comment_id) AS commentsCount,
+        COUNT(DISTINCT shares.share_id) AS sharesCount
+      FROM reviewed
+      INNER JOIN user u1 ON reviewed.user_id = u1.user_id
+      INNER JOIN book ON reviewed.book_id = book.book_id
+      LEFT JOIN likes ON likes.review_id = reviewed.review_id
+      LEFT JOIN comments ON comments.review_id = reviewed.review_id
+      LEFT JOIN shares ON shares.review_id = reviewed.review_id
+      WHERE reviewed.user_id = ?
+      GROUP BY reviewed.review_id, reviewed.book_id, reviewed.user_id, reviewed.date, book.imageUrl, book.title, book.author, reviewed.context, reviewed.rating, u1.username
+      ORDER BY reviewed.date DESC;
+    `;
+
+    // Execute both queries
+    const [sharedRows] = await db.execute(sharedQuery, [userId]);
+    const [reviewedRows] = await db.execute(reviewedQuery, [userId]);
+
+    // Combine the results and sort them by date and time in descending order
+    const combinedItems = [
+      ...sharedRows.map((row) => ({
+        ...row,
+        type: "shared",
+        review: new Share(
+          row.reviewId,
+          row.sharerUsername,
+          new Post(
+            row.reviewId,
+            row.bookId,
+            row.userId,
+            row.imagePath,
+            row.bookName,
+            row.authorName,
+            row.context,
+            row.rating,
+            row.date,
+            row.reviewerName,
+            row.likesCount,
+            row.commentsCount,
+            row.sharesCount
+          ),
+          row.userId,
+          row.imagePath
+        )
+      })),
+      ...reviewedRows.map((row) => ({
+        ...row,
+        type: "reviewed",
+        review: new Post(
+          row.reviewId,
+          row.bookId,
+          row.userId,
+          row.imagePath,
+          row.bookName,
+          row.authorName,
+          row.context,
+          row.rating,
+          row.date,
+          row.reviewerName,
+          row.likesCount,
+          row.commentsCount,
+          row.sharesCount
+        ),
+      })),
+    ];
+
+    // Sort by date and time in descending order
+    combinedItems.sort((a, b) => {
+      const dateComparison =
+        new Date(b.date).getTime() - new Date(a.date).getTime();
+      if (dateComparison === 0) {
+        const timeA = a.time ? new Date(`1970-01-01T${a.time}Z`).getTime() : 0;
+        const timeB = b.time ? new Date(`1970-01-01T${b.time}Z`).getTime() : 0;
+        return timeB - timeA;
+      }
+      return dateComparison;
+    });
+
+    return combinedItems;
+  } catch (error) {
+    throw new Error("Failed to fetch user activities in time order: " + error.message);
   }
 };

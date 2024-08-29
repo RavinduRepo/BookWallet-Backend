@@ -61,4 +61,5 @@ router.get('/shared-reviews/:user_id', shareController.getSharedReviewsByUser);
 router.get('/:reviewId/shared-users', shareController.getUsersWhoSharedReview);
 router.post('/check-shared', shareController.checkIfShared);
 router.get('/shared-reviews-timeOrder/:userId', shareController.getReviewsSharedByUserOrderofTime);
+router.get("/activities/:userId", shareController.getUserActivitiesByTimeOrder);
 module.exports = router;
