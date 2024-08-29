@@ -2,13 +2,14 @@ const db = require("../config/dbConfig");
 const services = require("../services/userServices");
 const authService = require("../services/authService");
 
-const createUser = async (username, email, password, description) => {
+const createUser = async (username, email, password, imageUrl, description) => {
   const sql =
-    "INSERT INTO user (username, email, password, description) VALUES (?, ?, ?, ?)";
+    "INSERT INTO user (username, email, password, imageUrl, description) VALUES (?, ?, ?, ?, ?)";
   const [result] = await db.execute(sql, [
     username,
     email,
     password,
+    imageUrl,
     description,
   ]);
   console.log("logint", result);
@@ -129,15 +130,11 @@ const updateAllDetails = async (
 const getUserProfile = async (req, res) => {
   const userId = parseInt(req.params.id);
   const token = req.headers.authorization;
-  console.log("hi");
-  console.log(token);
 
   try {
-    decoded = await authService.verifyToken(token);
-    loggedInUserId = decoded.id;
+    const decoded = await authService.verifyToken(token);
+    const loggedInUserId = decoded.id;
     const user = await services.getUserProfile(userId, loggedInUserId);
-    console.log("hi");
-
     if (user) {
       res.json(user);
     } else {
