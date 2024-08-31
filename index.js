@@ -16,6 +16,7 @@ const bookRecommendRoutes = require("./routes/bookRecommendRoutes");
 const homeScreenroutes = require("./routes/homeScreenRoutes");
 const historyRoutes = require("./routes/historyRoutes");
 const groupRoutes = require("./routes/groupRoutes")
+const storeRoutes = require("./store_management/storeRoutes");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -34,6 +35,7 @@ app.use("/api/book", bookRoutes);
 app.use("/api", homeScreenroutes);
 app.use("/api/history", historyRoutes);
 app.use("/api/groups",groupRoutes);
+app.use("/api/stores", storeRoutes);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
