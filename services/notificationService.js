@@ -71,6 +71,61 @@ class NotificationService {
       time: notification.time
     }));
   }
+  async getCommentsNotificationsForUser(userId) {
+    const commentNotificationsQuery = `
+      SELECT 
+        c.user_id AS commentedUserId,
+        r.review_id,
+        u.username AS commentedUserName,
+        b.title AS bookName,
+        c.date,
+        c.time
+      FROM 
+        comments c
+      INNER JOIN 
+        reviewed r ON c.review_id = r.review_id
+      INNER JOIN 
+        user u ON c.user_id = u.user_id
+      INNER JOIN 
+        book b ON r.book_id = b.book_id
+      WHERE 
+        r.user_id = ?
+      ORDER BY 
+        c.date DESC, c.time DESC;
+    `;
+    const commentNotifications = await db.execute(commentNotificationsQuery, [userId]);
+
+    return commentNotifications[0].map(notification => ({
+      message: `${notification.commentedUserName} commented on your review on ${notification.bookName}`,
+      reviewId: notification.review_id,
+      commentedUserId: notification.commentedUserId,
+      commentedUserName: notification.commentedUserName,
+      bookName: notification.bookName,
+      date: notification.date,
+      time: notification.time
+    }));
+  }
+
+  async getAllNotificationsForUser(userId) {
+    const allNotifications = [
+      ...await this.getNotificationsForUser(userId),
+      ...await this.getLikesNotificationsForUser(userId),
+      ...await this.getCommentsNotificationsForUser(userId)
+    ];
+
+    // Sort all notifications by date and time in descending order
+    return allNotifications.sort((a, b) => {
+      if (a.date === b.date) {
+        return b.time.localeCompare(a.time);
+      }
+      return b.date.localeCompare(a.date);
+    });
+  }
 }
+
+
+
+
+
 
 module.exports = new NotificationService();
