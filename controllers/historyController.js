@@ -1,5 +1,6 @@
 const historyService = require("../services/historyService");
 const authService = require("../services/authService");
+const trendingpointsService = require("../services/trendingpointsService");
 
 class HistoryController {
   async getReviewsByUserId(req, res) {
@@ -81,6 +82,7 @@ class HistoryController {
       const decoded = await authService.verifyToken(token);
       const loggedInUserId = decoded.id;
       await historyService.insertBookHistory(loggedInUserId, relevant_id);
+      await trendingpointsService.addTrendingPoint(relevant_id);
       res.status(200).json({ message: "Book History inserted successfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });

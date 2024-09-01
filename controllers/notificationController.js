@@ -22,6 +22,28 @@ class NotificationController {
       res.status(500).json({ message: 'Error fetching notifications', error });
     }
   }
+  async getUserCommentsNotifications(req, res) {
+    const { userId } = req.params;
+
+    try {
+      const notifications = await NotificationService.getCommentsNotificationsForUser(userId);
+      res.status(200).json(notifications);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching notifications', error });
+    }
+  }
+
+  async getAllUserNotifications(req, res) {
+    const { userId } = req.params;
+
+    try {
+      const notifications = await NotificationService.getAllNotificationsForUser(userId);
+      res.status(200).json(notifications);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching notifications', error });
+    }
+  }
+
 }
 
 module.exports = new NotificationController();

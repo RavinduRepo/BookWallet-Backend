@@ -4,6 +4,6 @@ const router = express.Router();
 
 router.get('/share/:userId', NotificationController.getUserNotifications);
 router.get('/like/:userId', NotificationController.getUserLikesNotifications);
-
-
+router.get('/comment/:userId', NotificationController.getUserCommentsNotifications);
+router.get('/all/:userId', NotificationController.getAllUserNotifications);
 module.exports = router;
