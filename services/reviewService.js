@@ -54,7 +54,8 @@ const getReviewWithBookId = async (bookId) => {
           book.title, 
           book.author, 
           book.imageUrl, 
-          user.username`;
+          user.username
+    ORDER BY reviewed.date DESC, reviewed.time DESC`;
 
   const [reviewDetails] = await db.execute(query, [bookId]);
 
@@ -109,7 +110,8 @@ const getReviewWithUserId = async (userId) => {
              book.title, 
              book.author, 
              book.imageUrl, 
-             user.username`;
+             user.username
+    ORDER BY reviewed.date DESC, reviewed.time DESC`;
              
   const [reviewDetails] = await db.execute(query, [userId]);
 

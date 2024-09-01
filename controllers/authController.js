@@ -1,15 +1,35 @@
 const authService = require('../services/authService');
 const userService = require('../services/userServices');
+const captchaService = require('../services/captchaService');
 
 const signUp = async (req, res) => {
     try {
-        console.log("signup requested");
-        const { username, email, password, imageUrl, description } = req.body;
+        console.log("Signup requested");
+
+        const { username, email, password, imageUrl, description, recaptchaToken } = req.body;
+
+        if (!recaptchaToken) {
+            return res.status(400).json({ message: 'Captcha token is missing' });
+        }
+
+        const recaptchaScore = await captchaService.verifyRecaptcha(recaptchaToken);
+        console.log(recaptchaScore);
+
+        if (recaptchaScore === null) {
+            return res.status(400).json({ message: 'Captcha verification failed due to invalid token' });
+        }
+
+        if (recaptchaScore < 0.5) {
+            return res.status(400).json({ message: 'Captcha verification failed' });
+        }
+
         const user = await authService.signUp(username, email, password, imageUrl, description);
-        console.log("user created");
+        console.log("User created");
+
         res.status(201).json({ message: 'User created successfully', user });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error("Error during sign up:", error);
+        res.status(500).json({ error: 'An error occurred while processing your request' });
     }
 };
 
