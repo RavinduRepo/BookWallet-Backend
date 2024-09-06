@@ -18,6 +18,7 @@ const historyRoutes = require("./routes/historyRoutes");
 const groupRoutes = require("./routes/groupRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const storeRoutes = require("./store_management/storeRoutes");
+const savedItemsRoutes = require("./routes/savedItemsRoutes");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -35,9 +36,11 @@ app.use("/api/users", userfollowRoutes);
 app.use("/api/book", bookRoutes);
 app.use("/api", homeScreenroutes);
 app.use("/api/history", historyRoutes);
-app.use("/api/groups",groupRoutes);
-app.use("/api/notification",notificationRoutes);
+app.use("/api/groups", groupRoutes);
+app.use("/api/notification", notificationRoutes);
 app.use("/api/stores", storeRoutes);
+app.use("/api/saved-items", savedItemsRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
