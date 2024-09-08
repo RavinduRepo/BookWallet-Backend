@@ -99,6 +99,42 @@ const removeFromWishlist = async (userId, bookId) => {
     }
 };
 
+const getBookid = async (book) => {
+    const {
+      title,
+      ISBN10,
+      ISBN13,
+      publication_date,
+      description,
+      author,
+      rating,
+      pages,
+      genre,
+      imageUrl,
+      resource,
+    } = book;
+    try {
+      let bookId;
+      // Check if the book is already available
+      const checkBookSql =
+        "SELECT book_id FROM book WHERE (ISBN10 = ? OR ISBN13 = ?) AND title = ?"; //13 or 10 and title
+      const [checkBookRows] = await db.query(checkBookSql, [
+        ISBN10,
+        ISBN13,
+        title,
+      ]);
+  
+      
+        // Book already exists, use the existing book_id
+        bookId = checkBookRows[0].book_id;
+        return bookId;
+      
+      } catch (err) {
+      console.error("Database error in addBookAndReview: ", err.message);
+      throw new Error("Database error: " + err.message);
+      }
+  };
+
 
 
 module.exports = { 
@@ -107,4 +143,5 @@ module.exports = {
     addToWishlist,
     postWishlistBook,
     removeFromWishlist ,
+    getBookid ,
 };
