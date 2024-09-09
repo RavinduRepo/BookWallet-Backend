@@ -125,6 +125,32 @@ class GroupService {
       throw new Error("Failed to fetch group by ID");
     }
   }
-}
+  async getMembersByGroupId(group_id) {
+    try {
+      const membersQuery = `
+        SELECT u.user_id, u.username, u.email
+        FROM user u
+        INNER JOIN member_of m ON u.user_id = m.user_id
+        WHERE m.group_id = ?;
+      `;
 
+      const [rows] = await db.execute(membersQuery, [group_id]);
+
+      if (rows.length === 0) {
+        throw new Error("No members found for this group");
+      }
+
+      // Map the rows to the expected structure
+      return rows.map((row) => ({
+        userId: row.user_id, // Adjust according to the column name returned
+        username: row.username,
+        email: row.email,
+        imageUrl: "default_image_url", // Adjust if you have an imageUrl field
+      }));
+    } catch (error) {
+      console.error("Error fetching members by group ID:", error);
+      throw new Error("Failed to fetch group members");
+    }
+  }
+}
 module.exports = new GroupService();
