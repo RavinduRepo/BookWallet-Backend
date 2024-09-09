@@ -75,6 +75,21 @@ class GroupController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+  async getMembersByGroupId(req, res) {
+    try {
+      const { group_id } = req.params;
+  
+      if (!group_id) {
+        return res.status(400).json({ message: "Group ID is required." });
+      }
+  
+      const members = await GroupService.getMembersByGroupId(group_id);
+      res.status(200).json(members);
+    } catch (error) {
+      console.error("Error fetching group members:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
 }
 
 module.exports = new GroupController();
