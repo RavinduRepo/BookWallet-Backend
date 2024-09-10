@@ -3,14 +3,57 @@ const Post = require("../models/postModel");
 
 const getReviewWithId = async (reviewId) => {
   const query = `
-          SELECT reviewed.*, user.username, book.title, book.author
-          FROM reviewed
-          INNER JOIN user ON reviewed.user_id = user.user_id
-          INNER JOIN book ON reviewed.book_id = book.book_id
-          WHERE reviewed.review_id = ?`;
+    SELECT reviewed.review_id, 
+        reviewed.book_id, 
+        reviewed.user_id, 
+        reviewed.context, 
+        reviewed.rating, 
+        reviewed.date,
+        book.title, 
+        book.author, 
+        book.imageUrl, 
+        user.username,
+        COUNT(DISTINCT likes.user_id) AS likesCount,
+        COUNT(DISTINCT comments.comment_id) AS commentsCount,
+        COUNT(DISTINCT shares.share_id) AS sharesCount
+    FROM reviewed
+    INNER JOIN user ON reviewed.user_id = user.user_id
+    INNER JOIN book ON reviewed.book_id = book.book_id
+    LEFT JOIN likes ON likes.review_id = reviewed.review_id
+    LEFT JOIN comments ON comments.review_id = reviewed.review_id
+    LEFT JOIN shares ON shares.review_id = reviewed.review_id
+    WHERE reviewed.review_id = ?
+    GROUP BY reviewed.review_id, 
+          reviewed.book_id, 
+          reviewed.user_id, 
+          reviewed.context, 
+          reviewed.rating, 
+          reviewed.date,
+          book.title, 
+          book.author, 
+          book.imageUrl, 
+          user.username
+    ORDER BY reviewed.date DESC, reviewed.time DESC`;
 
     const [reviewDetails] = await db.execute(query, [reviewId]);
-    return reviewDetails.length > 0 ? reviewDetails[0] : null;
+    return reviewDetails.map(
+      (reviewDetail) =>
+        new Post(
+          reviewDetail.review_id,
+          reviewDetail.book_id,
+          reviewDetail.user_id,
+          reviewDetail.imageUrl,
+          reviewDetail.title,
+          reviewDetail.author,
+          reviewDetail.context,
+          reviewDetail.rating,
+          reviewDetail.date,
+          reviewDetail.username,
+          reviewDetail.likesCount,
+          reviewDetail.commentsCount,
+          reviewDetail.sharesCount
+        )
+    );
 };
 
 const getReviews = async () => {
