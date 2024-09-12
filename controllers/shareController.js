@@ -1,5 +1,6 @@
 const shareService = require('../services/shareService');
 const authService = require('../services/authService'); 
+const trendingpointsService = require("../services/trendingpointsService");
 
 
 exports.shareReview = async (req, res) => {
@@ -27,6 +28,7 @@ exports.shareReview = async (req, res) => {
       await shareService.removeShare(review_id, user_id);
       res.status(200).json({ message: 'Review share removed successfully' });
     } else {
+      await trendingpointsService.addTrendingPointFromReview(review_id,5);
       // If the review was not shared before, create a new share record
       await shareService.createShare(review_id, user_id);
       res.status(200).json({ message: 'Review shared successfully' });
