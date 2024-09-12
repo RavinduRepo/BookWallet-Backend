@@ -1,11 +1,15 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const groupController = require('../controllers/groupController');
+const groupController = require("../controllers/groupController");
 
-
-// Define routes and assign controllers
-router.get('/group/:id', groupController.getGroupMembers);
-router.get('/group', groupController.getAllGroups); 
-router.post('/create', groupController.createGroup);
+router.post("/create", groupController.createGroup);
+// Route to get groups by user ID
+router.get("/user-groups", groupController.getGroupsByUserId);
+//get membercount
+router.get("/membercount/:group_id", groupController.getMemberCount);
+// Route to get a specific group by its group ID
+router.get("/:group_id", groupController.getGroupById);
+//fetch members
+router.get("/:group_id/members", groupController.getMembersByGroupId);
 
 module.exports = router;

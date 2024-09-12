@@ -1,42 +1,156 @@
-const db = require("../config/dbConfig"); // Adjust the path based on your project structure
+const db = require("../config/dbConfig");
+const Group = require("../models/GroupModel");
 
-exports.createGroup = async (group_name, group_description, group_image_url, user_id) => {
-  try {
-    // Start a transaction (not using prepared statement)
-    await db.query('START TRANSACTION');
+class GroupService {
+  async createGroup(group_name, group_description, group_image_url, user_id) {
+    const createdAt = new Date();
 
-    // Insert into the groups table
-    const groupInsertQuery = `
-      INSERT INTO groups (group_name, group_description, group_image_url)
-      VALUES (?, ?, ?);
-    `;
-    const [groupResult] = await db.execute(groupInsertQuery, [group_name, group_description, group_image_url]);
+    try {
+      // Insert into the groups table
+      const groupInsertQuery = `
+        INSERT INTO groups (group_name, group_description, group_image_url, created_at)
+        VALUES (?, ?, ?, ?);
+      `;
+      const [groupResult] = await db.execute(groupInsertQuery, [
+        group_name,
+        group_description,
+        group_image_url,
+        createdAt,
+      ]);
 
-    // Retrieve the inserted group_id
-    const group_id = groupResult.insertId;
+      const group_id = groupResult.insertId;
 
-    // Insert into the groupAdmin table
-    const adminInsertQuery = `
-      INSERT INTO groupadmin (group_id, user_id)
-      VALUES (?, ?);
-    `;
-    await db.execute(adminInsertQuery, [group_id, user_id]);
+      // Insert into the groupAdmin table
+      const adminInsertQuery = `
+        INSERT INTO groupadmin (group_id, user_id)
+        VALUES (?, ?);
+      `;
+      await db.execute(adminInsertQuery, [group_id, user_id]);
 
-    const memberInsertQuery = `
-      INSERT INTO member_of (group_id, user_id)
-      VALUES (?, ?);
-    `;
-    await db.execute(memberInsertQuery, [group_id, user_id]);
-    // Commit the transaction (not using prepared statement)
-    await db.query('COMMIT');
-    
-    return { group_id, group_name, group_description, group_image_url };
-  } catch (error) {
-    // Rollback the transaction in case of an error (not using prepared statement)
-    await db.query('ROLLBACK');
+      // Insert into the member_of table
+      const memberInsertQuery = `
+        INSERT INTO member_of (group_id, user_id)
+        VALUES (?, ?);
+      `;
+      await db.execute(memberInsertQuery, [group_id, user_id]);
 
-    // Detailed error logging
-    console.error('Error in createGroup:', error);
-    throw new Error('Failed to create group');
+      return new Group(
+        group_id,
+        group_name,
+        group_description,
+        group_image_url,
+        createdAt
+      );
+    } catch (error) {
+      console.error("Error in createGroup:", error);
+      throw new Error("Failed to create group");
+    }
   }
-};
+
+  async getGroupsByUserId(user_id) {
+    try {
+      console.log("Fetching groups for user");
+
+      const groupsQuery = `
+        SELECT g.group_id, 
+               g.group_name, 
+               g.group_description, 
+               g.group_image_url, 
+               g.created_at, 
+               (
+                 SELECT COUNT(DISTINCT m2.user_id)
+                 FROM member_of m2
+                 WHERE m2.group_id = g.group_id
+               ) AS memberCount
+        FROM groups g
+        INNER JOIN member_of m ON g.group_id = m.group_id
+        WHERE m.user_id = ?;
+      `;
+
+      const [rows] = await db.execute(groupsQuery, [user_id]);
+
+      return rows.map(
+        (row) =>
+          new Group(
+            row.group_id,
+            row.group_name,
+            row.group_description,
+            row.group_image_url,
+            row.created_at,
+            row.memberCount, // Include member count for the relevant group
+            0, // discussionCount (can be fetched separately if needed)
+            [] // memberIds (can be fetched separately if needed)
+          )
+      );
+    } catch (error) {
+      console.error("Error in getGroupsByUserId:", error);
+      throw new Error("Failed to fetch groups for the user");
+    }
+  }
+
+  async getGroupById(group_id) {
+    try {
+      const groupQuery = `
+        SELECT g.group_id, 
+               g.group_name, 
+               g.group_description, 
+               g.group_image_url, 
+               g.created_at, 
+               (
+                 SELECT COUNT(DISTINCT m2.user_id)
+                 FROM member_of m2
+                 WHERE m2.group_id = g.group_id
+               ) AS memberCount
+        FROM groups g
+        WHERE g.group_id = ?;
+      `;
+
+      const [rows] = await db.execute(groupQuery, [group_id]);
+
+      if (rows.length === 0) {
+        throw new Error("Group not found");
+      }
+
+      const row = rows[0];
+      return new Group(
+        row.group_id,
+        row.group_name,
+        row.group_description,
+        row.group_image_url,
+        row.created_at,
+        row.memberCount // Include member count
+      );
+    } catch (error) {
+      console.error("Error fetching group by ID:", error);
+      throw new Error("Failed to fetch group by ID");
+    }
+  }
+  async getMembersByGroupId(group_id) {
+    try {
+      const membersQuery = `
+        SELECT u.user_id, u.username, u.email
+        FROM user u
+        INNER JOIN member_of m ON u.user_id = m.user_id
+        WHERE m.group_id = ?;
+      `;
+
+      const [rows] = await db.execute(membersQuery, [group_id]);
+
+      if (rows.length === 0) {
+        throw new Error("No members found for this group");
+      }
+
+      // Map the rows to the expected structure
+      return rows.map((row) => ({
+        userId: row.user_id, // Adjust according to the column name returned
+        username: row.username,
+        email: row.email,
+        imageUrl: "default_image_url", // Adjust if you have an imageUrl field
+      }));
+    } catch (error) {
+      console.error("Error fetching members by group ID:", error);
+      throw new Error("Failed to fetch group members");
+    }
+  }
+}
+module.exports = new GroupService();
