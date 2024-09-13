@@ -78,15 +78,54 @@ class GroupController {
   async getMembersByGroupId(req, res) {
     try {
       const { group_id } = req.params;
-  
+
       if (!group_id) {
         return res.status(400).json({ message: "Group ID is required." });
       }
-  
+
       const members = await GroupService.getMembersByGroupId(group_id);
       res.status(200).json(members);
     } catch (error) {
       console.error("Error fetching group members:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  async getUserRequestsByGroupId(req, res) {
+    try {
+      const { group_id } = req.params;
+
+      if (!group_id) {
+        return res.status(400).json({ message: "Group ID is required." });
+      }
+
+      const reqmembers = await GroupService.getUserRequestsByGroupId(group_id);
+      res.status(200).json(reqmembers);
+    } catch (error) {
+      console.error("Error fetching user requests by group ID:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  // Method to check if the user is an admin of a specific group
+  async checkAdminStatus(req, res) {
+    try {
+      const token = req.headers.authorization?.split(" ")[1]; // Extract token from headers
+      const { group_id } = req.params; // Get the group_id from the request parameters
+      // Validate input
+      if (!group_id) {
+        return res.status(400).json({ message: "Group ID is required." });
+      }
+
+      // Verify token and get user ID
+      const decoded = await authService.verifyToken(token);
+      const user_id = decoded.id;
+
+      // Check if the user is an admin
+      const isAdmin = await GroupService.isAdmin(user_id, group_id);
+
+      res.status(200).json({ isAdmin });
+    } catch (error) {
+      console.error("Error checking admin status:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   }

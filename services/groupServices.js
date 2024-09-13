@@ -152,5 +152,44 @@ class GroupService {
       throw new Error("Failed to fetch group members");
     }
   }
+  async getUserRequestsByGroupId(group_id) {
+    try {
+      const query = `
+        SELECT u.user_id, u.username, u.email
+        FROM group_member_req gmr
+        INNER JOIN user u ON gmr.user_id = u.user_id
+        WHERE gmr.group_id = ?;
+      `;
+      const [rows] = await db.execute(query, [group_id]);
+
+      // Map the rows to the expected structure
+      return rows.map((row) => ({
+        userId: row.user_id,
+        username: row.username,
+        email: row.email,
+        imageUrl: "default_image_url", // You can adjust this if you have a field for the image URL
+      }));
+    } catch (error) {
+      console.error("Error fetching user requests by group ID:", error);
+      throw new Error("Failed to fetch user requests");
+    }
+  }
+  // Check if the user is an admin of a specific group
+  async isAdmin(user_id, group_id) {
+    try {
+      console.log("hi");
+      const query = `
+        SELECT COUNT(*) AS isAdmin
+        FROM groupadmin
+        WHERE user_id = ? AND group_id = ?;
+      `;
+      const [rows] = await db.execute(query, [user_id, group_id]);
+      console.log(rows[0].isAdmin > 0);
+      return rows[0].isAdmin > 0; // Returns true if user is admin
+    } catch (error) {
+      console.error("Error checking admin status:", error);
+      throw new Error("Failed to check admin status");
+    }
+  }
 }
 module.exports = new GroupService();
