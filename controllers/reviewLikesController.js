@@ -1,5 +1,6 @@
 const reviewLikesService = require("../services/reviewLikesService");
 const authService = require("../services/authService");
+const trendingpointsService = require("../services/trendingpointsService");
 
 // Controller function to handle the request
 const getUsersWhoLikedReview = async (req, res) => {
@@ -32,7 +33,7 @@ const likeReviewController = async (req, res) => {
         .status(403)
         .json({ error: "User ID does not match the logged-in user" });
     }
-
+    await trendingpointsService.addTrendingPointFromReview(reviewId,5);
     await reviewLikesService.likeReview(reviewId, userId);
     res.status(200).json({ message: "Review liked successfully" });
   } catch (error) {

@@ -82,7 +82,7 @@ class HistoryController {
       const decoded = await authService.verifyToken(token);
       const loggedInUserId = decoded.id;
       await historyService.insertBookHistory(loggedInUserId, relevant_id);
-      await trendingpointsService.addTrendingPoint(relevant_id);
+      await trendingpointsService.addTrendingPoint(relevant_id,1);
       res.status(200).json({ message: "Book History inserted successfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });

@@ -1,6 +1,7 @@
 const db = require('../config/dbConfig');
 const Book = require('../models/bookModel');
 const authService = require('../services/authService');
+const trendingpointsService = require("../services/trendingpointsService");
 
 const postRecommendBook = async (req, res) => {
     const { bookId, recommenderId} = req.params;
@@ -25,7 +26,9 @@ const postRecommendBook = async (req, res) => {
         if (followers.length === 0) {
             return res.status(404).json({ message: 'No followers found for the given recommender ID' });
         }
-
+        //trending points adds if bookrecommended
+        await trendingpointsService.addTrendingPoint(bookId,40);
+        
         const insertRecommendationQuery = `INSERT INTO book_recommended (book_id, user_id, recommender_id) VALUES (?, ?, ?)`;
         const promises = followers.map(follower => {
             const userId = follower.follower_id;
