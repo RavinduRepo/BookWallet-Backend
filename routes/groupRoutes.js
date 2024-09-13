@@ -11,5 +11,8 @@ router.get("/membercount/:group_id", groupController.getMemberCount);
 router.get("/:group_id", groupController.getGroupById);
 //fetch members
 router.get("/:group_id/members", groupController.getMembersByGroupId);
-
+//fetch group req
+router.get('/:group_id/requests', groupController.getUserRequestsByGroupId);
+// Check if the user is an admin of the group
+router.get("/:group_id/check-admin", groupController.checkAdminStatus);
 module.exports = router;
