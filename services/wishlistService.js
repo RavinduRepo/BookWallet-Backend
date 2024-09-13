@@ -1,5 +1,6 @@
 const db = require("../config/dbConfig");
 const authService = require('../services/authService');
+const trendingpointsService = require("../services/trendingpointsService");
 const getWishlistByUserId = async (userId) => {
     try {
         const query = `
@@ -77,7 +78,7 @@ const postWishlistBook = async (req, res) => {
         if (rows.length > 0) {
             return res.status(409).json({ message: 'Book already in the wishlist' });
         }
-
+        await trendingpointsService.addTrendingPoint(bookId,8);
         // Insert the book into the wishlist
         const insertQuery = `INSERT INTO wishlist (user_id, book_id) VALUES (?, ?)`;
         await db.execute(insertQuery, [userId, bookId]);
@@ -113,27 +114,26 @@ const getBookid = async (book) => {
       imageUrl,
       resource,
     } = book;
+  
     try {
-      let bookId;
       // Check if the book is already available
       const checkBookSql =
-        "SELECT book_id FROM book WHERE (ISBN10 = ? OR ISBN13 = ?) AND title = ?"; //13 or 10 and title
-      const [checkBookRows] = await db.query(checkBookSql, [
-        ISBN10,
-        ISBN13,
-        title,
-      ]);
+        "SELECT book_id FROM book WHERE (ISBN10 = ? OR ISBN13 = ?) AND title = ?"; // Match on ISBN and title
+      const [checkBookRows] = await db.query(checkBookSql, [ISBN10, ISBN13, title]);
   
-      
-        // Book already exists, use the existing book_id
-        bookId = checkBookRows[0].book_id;
-        return bookId;
-      
-      } catch (err) {
-      console.error("Database error in addBookAndReview: ", err.message);
-      throw new Error("Database error: " + err.message);
+      // If no book is found, return null
+      if (checkBookRows.length === 0) {
+        return null; // No book found with the given ISBN and title
       }
+  
+      // Book already exists, return the existing book_id
+      return checkBookRows[0].book_id;
+    } catch (err) {
+      console.error("Database error in getBookid: ", err.message);
+      throw new Error("Database error: " + err.message);
+    }
   };
+  
 
 
 

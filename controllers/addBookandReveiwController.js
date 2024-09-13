@@ -2,6 +2,7 @@ const db = require("../config/dbConfig");
 const { addReview } = require("../services/addReviewService");
 const { addBook } = require("../services/addBookService");
 const authService = require("../services/authService");
+const trendingpointsService = require("../services/trendingpointsService");
 
 const addBookAndReviewController = async (req, res) => {
   console.log("Received request at addBookAndReviewController");
@@ -32,6 +33,7 @@ const addBookAndReviewController = async (req, res) => {
     // Add the book to the database
     const bookId = await addBook(book);
 
+    await trendingpointsService.addTrendingPoint(bookId,50);
     // Add the review to the database
     const result = await addReview(review, bookId);
 

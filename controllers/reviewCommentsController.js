@@ -1,5 +1,6 @@
 const reviewCommentsService = require("../services/reviewCommentsService");
 const authService = require("../services/authService");
+const trendingpointsService = require("../services/trendingpointsService");
 
 const addCommentController = async (req, res) => {
   console.log("Received request at addCommentController");
@@ -30,6 +31,7 @@ const addCommentController = async (req, res) => {
       return res.status(403).json({ error: "Unauthorized action" });
     }
 
+    await trendingpointsService.addTrendingPointFromReview(reviewId,5);
     // Add the comment to the database
     const result = await reviewCommentsService.addCommentService(
       comment,

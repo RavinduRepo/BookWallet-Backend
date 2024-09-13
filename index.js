@@ -19,6 +19,7 @@ const groupRoutes = require("./routes/groupRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const storeRoutes = require("./store_management/storeRoutes");
 const savedItemsRoutes = require("./routes/savedItemsRoutes");
+const trendingRoutes = require('./routes/trendingRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -43,6 +44,7 @@ app.use("/api/groups", groupRoutes);
 app.use("/api/notification", notificationRoutes);
 app.use("/api/stores", storeRoutes);
 app.use("/api/saved-items", savedItemsRoutes);
+app.use('/api/trending', trendingRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
