@@ -24,7 +24,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Import updatetrending.js to run the cron job
-// require("./updatetrending");
+require("./updatetrending");
 
 app.use(bodyParser.json());
 
