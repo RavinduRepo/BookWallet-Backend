@@ -1,117 +1,51 @@
-const express = require('express');
-const sql = require('mssql');
+require('dotenv').config();
+const mysql = require('mysql2');
 
-// Configuration for your Azure SQL Database
-const config = {
-    user: 'TheBookWalletAdmin',
-    password: 'IamBookWalletAdminE20280@123',
-    server: 'thebookwallet.database.windows.net',
-    database: 'bookwallet',
-    options: {
-        encrypt: true, // Use encryption
-        trustServerCertificate: false // Change to true if using self-signed certificates
-    }
-};
-
-
-// Initialize the Express application
-const app = express();
-app.use(express.json());
-
-// Create a connection pool
-let pool;
-
-async function getConnection() {
-    if (!pool) {
-        pool = await sql.connect(config);
-    }
-    return pool;
-}
-
-// Endpoint to insert data into the database
-app.post('/add-user', async (req, res) => {
-    const { UserName, UserEmail, DateOfBirth } = req.body;
-    console.log("trinng add");
-    try {
-        const pool = await getConnection();
-        await pool.request()
-            .input('UserName', sql.NVarChar, UserName)
-            .input('UserEmail', sql.NVarChar, UserEmail)
-            .input('DateOfBirth', sql.Date, DateOfBirth)
-            .query('INSERT INTO Users (UserName, UserEmail, DateOfBirth) VALUES (@UserName, @UserEmail, @DateOfBirth)');
-
-        res.status(200).send('User added successfully');
-    } catch (err) {
-        console.error('Error inserting data:', err);
-        res.status(500).send('Error inserting data');
-    }
+// Create a connection to the database
+const connection = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
-// Endpoint to get data from the database
-app.get('/get-users', async (req, res) => {
-    console.log("trinng get");
+// Connect to the database
+connection.connect((err) => {
+  if (err) {
+    console.error('Error connecting to the database:', err.message);
+    return;
+  }
+  console.log('Connected to the MySQL database.');
+  
+  // Insert a new user
+  const insertQuery = 'INSERT INTO users (name, email) VALUES (?, ?)';
+  const user = ['John Doe', 'johndoe@example.com'];
 
-    try {
-
-        const pool = await getConnection();
-        const result = await pool.request().query('SELECT * FROM Users');
-        
-        res.status(200).json(result.recordset);
-    } catch (err) {
-        console.error('Error retrieving data:', err);
-        res.status(500).send('Error retrieving data');
+  connection.query(insertQuery, user, (err, results) => {
+    if (err) {
+      console.error('Error inserting data:', err.message);
+      return;
     }
+    console.log('Inserted data:', results);
+
+    // Fetch data from the database
+    const selectQuery = 'SELECT * FROM users';
+
+    connection.query(selectQuery, (err, results) => {
+      if (err) {
+        console.error('Error fetching data:', err.message);
+        return;
+      }
+      console.log('Fetched data:', results);
+
+      // Close the database connection
+      connection.end((err) => {
+        if (err) {
+          console.error('Error closing the connection:', err.message);
+          return;
+        }
+        console.log('Connection closed.');
+      });
+    });
+  });
 });
-
-// Start the server
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // Import required modules
-// const express = require('express');
-// const app = express();
-// const port = process.env.PORT || 3000; // Use the PORT environment variable or default to 3000
-
-// // Middleware to handle JSON and URL-encoded form data
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-
-// // Default route that responds with a static JSON object
-// app.get('/test', (req, res) => {
-//   res.json({
-//     message: 'OK',
-//     status: 200,
-//     data: {
-//       name: 'Book Wallet',
-//       version: '1.0.0',
-//       description: 'This is a simple API response from Book Wallet.',
-//       author: 'Your Name'
-//     }
-//   });
-// });
-
-// // Start the server and listen on the specified port
-// app.listen(port, () => {
-//   console.log(`Server is running on port ${port}`);
-// });
