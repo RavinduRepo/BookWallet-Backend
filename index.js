@@ -28,6 +28,19 @@ require("./updatetrending");
 
 app.use(bodyParser.json());
 
+// Endpoint to fetch and display all users
+app.get('/users', (req, res) => {
+  const selectQuery = 'SELECT * FROM users';
+
+  connection.query(selectQuery, (err, results) => {
+    if (err) {
+      console.error('Error fetching data:', err.message);
+      return res.status(500).send('Error fetching data');
+    }
+    res.json(results); // Send the results as JSON response
+  });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/image", imageRoutes);
