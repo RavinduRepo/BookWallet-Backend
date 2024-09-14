@@ -29,16 +29,16 @@ require("./updatetrending");
 app.use(bodyParser.json());
 
 // Endpoint to fetch and display all users
-app.get('/users', (req, res) => {
+app.get('/users', async (req, res) => {
   const selectQuery = 'SELECT * FROM users';
 
-  connection.query(selectQuery, (err, results) => {
-    if (err) {
-      console.error('Error fetching data:', err.message);
-      return res.status(500).send('Error fetching data');
-    }
+  try {
+    const [results] = await db.execute(selectQuery);
     res.json(results); // Send the results as JSON response
-  });
+  } catch (err) {
+    console.error('Error fetching data:', err.message);
+    res.status(500).send('Error fetching data');
+  }
 });
 
 app.use("/api/auth", authRoutes);
