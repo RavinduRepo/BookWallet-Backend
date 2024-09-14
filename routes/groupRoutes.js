@@ -15,4 +15,8 @@ router.get("/:group_id/members", groupController.getMembersByGroupId);
 router.get('/:group_id/requests', groupController.getUserRequestsByGroupId);
 // Check if the user is an admin of the group
 router.get("/:group_id/check-admin", groupController.checkAdminStatus);
+// Route for accepting a user into a group
+router.post("/accept-user", groupController.acceptUserRequest);
+// Route for removing user request
+router.post('/request/remove', groupController.removeUserRequest);
 module.exports = router;
