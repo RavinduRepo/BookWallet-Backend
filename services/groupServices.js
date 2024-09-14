@@ -177,7 +177,6 @@ class GroupService {
   // Check if the user is an admin of a specific group
   async isAdmin(user_id, group_id) {
     try {
-      console.log("hi");
       const query = `
         SELECT COUNT(*) AS isAdmin
         FROM groupadmin
@@ -189,6 +188,64 @@ class GroupService {
     } catch (error) {
       console.error("Error checking admin status:", error);
       throw new Error("Failed to check admin status");
+    }
+  }
+  async acceptUserRequest(group_id, user_id, admin_id) {
+    try {
+      console.log("ubudeqidueqh");
+
+      // First, check if the admin_id is indeed the admin of the group
+      const isAdmin = await this.isAdmin(admin_id, group_id);
+      if (!isAdmin) {
+        throw new Error("Only group admins can accept user requests.");
+      }
+      // Remove the user from the group_member_req table
+      const deleteRequestQuery = `
+        DELETE FROM group_member_req 
+        WHERE group_id = ? AND user_id = ?;
+      `;
+      await db.execute(deleteRequestQuery, [group_id, user_id]);
+
+      // Add the user to the member_of table
+      const insertMemberQuery = `
+        INSERT INTO member_of (group_id, user_id) 
+        VALUES (?, ?);
+      `;
+      await db.execute(insertMemberQuery, [group_id, user_id]);
+
+      return { message: "User successfully added to the group." };
+    } catch (error) {
+      console.error("Error accepting user request:", error);
+      throw new Error("Failed to accept user request.");
+    }
+  }
+  // Method to remove a user request from the group_member_req table
+  async removeUserRequest(group_id, user_id, admin_id) {
+    try {
+      // Check if the user is an admin of the group
+      const isAdmin = await this.isAdmin(admin_id, group_id);
+      if (!isAdmin) {
+        throw new Error("You do not have permission to perform this action.");
+      }
+      // Remove the request from group_member_req table
+      const deleteRequestQuery = `
+      DELETE FROM group_member_req
+      WHERE group_id = ? AND user_id = ?;
+    `;
+      const [result] = await db.execute(deleteRequestQuery, [
+        group_id,
+        user_id,
+      ]);
+
+      // If no rows were deleted, it means the request doesn't exist
+      if (result.affectedRows === 0) {
+        throw new Error("No such request exists.");
+      }
+
+      return { message: "User request successfully removed." };
+    } catch (error) {
+      console.error("Error removing user request:", error);
+      throw new Error("Failed to remove user request.");
     }
   }
 }

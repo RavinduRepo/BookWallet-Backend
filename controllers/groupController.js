@@ -129,6 +129,57 @@ class GroupController {
       res.status(500).json({ message: "Internal server error" });
     }
   }
+  async acceptUserRequest(req, res) {
+    try {
+      const token = req.headers.authorization?.split(" ")[1]; // Extract token from headers
+      const { group_id, user_id } = req.body; // Extract group_id and user_id from the request body
+
+      // Validate input
+      if (!group_id || !user_id) {
+        return res
+          .status(400)
+          .json({ message: "Group ID and User ID are required." });
+      }
+
+      // Verify token and get admin (the user making the request)
+      const decoded = await authService.verifyToken(token);
+      const admin_id = decoded.id;
+
+      // Call service to accept the user request
+      const result = await GroupService.acceptUserRequest(
+        group_id,
+        user_id,
+        admin_id
+      );
+
+      res.status(200).json(result);
+    } catch (error) {
+      console.error("Error accepting user request:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  async removeUserRequest(req, res) {
+    try {
+      const { group_id, user_id } = req.body;
+      const token = req.headers.authorization?.split(" ")[1];
+
+      if (!group_id || !user_id) {
+        return res.status(400).json({ message: "Group ID and User ID are required." });
+      }
+
+      // Verify token and get the admin ID from the token
+      const decoded = await authService.verifyToken(token);
+      const admin_id = decoded.id;
+
+      // Call the service to remove the user request
+      const result = await GroupService.removeUserRequest(group_id, user_id, admin_id);
+
+      res.status(200).json(result);
+    } catch (error) {
+      console.error("Error removing user request:", error);
+      res.status(500).json({ message: error.message || "Internal server error" });
+    }
+  }
 }
 
 module.exports = new GroupController();
