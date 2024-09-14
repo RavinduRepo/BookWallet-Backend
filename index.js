@@ -32,7 +32,7 @@ app.use(bodyParser.json());
 app.get('/users', async (req, res) => {
   const selectQuery = 'SELECT * FROM users';
 
-  try {
+  try { 
     const [results] = await db.execute(selectQuery);
     res.json(results); // Send the results as JSON response
   } catch (err) {
