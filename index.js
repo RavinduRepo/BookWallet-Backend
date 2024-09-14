@@ -1,57 +1,51 @@
-require('dotenv').config();
-const express = require('express');
-const mysql = require('mysql2');
+require("dotenv").config();
+const db = require("./config/dbConfig");
+const express = require("express");
+const bodyParser = require("body-parser");
+const authRoutes = require("./routes/authRoutes");
+const postRoutes = require("./routes/postRoutes");
+const imageRoutes = require("./routes/imageRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
+const googleAPIRoutes = require("./routes/googleapiRoutes");
+const userRoutes = require("./routes/userRoutes");
+const bookReviewRoutes = require("./routes/addBookandReviewRoutes");
+const userfollowRoutes = require("./routes/userfollowRoutes");
+const bookRoutes = require("./routes/bookRoutes");
+const wishlistRoutes = require("./routes/wishlistRoutes");
+const bookRecommendRoutes = require("./routes/bookRecommendRoutes");
+const homeScreenroutes = require("./routes/homeScreenRoutes");
+const historyRoutes = require("./routes/historyRoutes");
+const groupRoutes = require("./routes/groupRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
+const storeRoutes = require("./store_management/storeRoutes");
+const savedItemsRoutes = require("./routes/savedItemsRoutes");
+const trendingRoutes = require('./routes/trendingRoutes');
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
-// Middleware to parse incoming requests with JSON payloads
-app.use(express.json());
+// Import updatetrending.js to run the cron job
+require("./updatetrending");
 
-// Create a connection to the database
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
+app.use(bodyParser.json());
 
-// Connect to the database
-connection.connect((err) => {
-  if (err) {
-    console.error('Error connecting to the database:', err.message);
-    return;
-  }
-  console.log('Connected to the MySQL database.');
-});
+app.use("/api/auth", authRoutes);
+app.use("/api/posts", postRoutes);
+app.use("/api/image", imageRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/googleapi", googleAPIRoutes);
+app.use("/api/user", userRoutes, bookRecommendRoutes);
+app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/book-review", bookReviewRoutes);
+app.use("/api/users", userfollowRoutes);
+app.use("/api/book", bookRoutes);
+app.use("/api", homeScreenroutes);
+app.use("/api/history", historyRoutes);
+app.use("/api/groups", groupRoutes);
+app.use("/api/notification", notificationRoutes);
+app.use("/api/stores", storeRoutes);
+app.use("/api/saved-items", savedItemsRoutes);
+app.use('/api/trending', trendingRoutes);
 
-// Endpoint to insert a new user
-app.post('/add-user', (req, res) => {
-  const { name, email } = req.body;
-
-  const insertQuery = 'INSERT INTO users (name, email) VALUES (?, ?)';
-  connection.query(insertQuery, [name, email], (err, results) => {
-    if (err) {
-      console.error('Error inserting data:', err.message);
-      return res.status(500).send('Error inserting data');
-    }
-    res.send('User added successfully!');
-  });
-});
-
-// Endpoint to fetch and display all users
-app.get('/users', (req, res) => {
-  const selectQuery = 'SELECT * FROM users';
-
-  connection.query(selectQuery, (err, results) => {
-    if (err) {
-      console.error('Error fetching data:', err.message);
-      return res.status(500).send('Error fetching data');
-    }
-    res.json(results); // Send the results as JSON response
-  });
-});
-
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
