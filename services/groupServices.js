@@ -49,44 +49,44 @@ class GroupService {
 
   async getGroupsByUserId(user_id) {
     try {
-      console.log("Fetching groups for user");
+        console.log("Fetching groups for user");
 
-      const groupsQuery = `
-        SELECT g.group_id, 
-               g.group_name, 
-               g.group_description, 
-               g.group_image_url, 
-               g.created_at, 
-               (
-                 SELECT COUNT(DISTINCT m2.user_id)
-                 FROM member_of m2
-                 WHERE m2.group_id = g.group_id
-               ) AS memberCount
-        FROM groups g
-        INNER JOIN member_of m ON g.group_id = m.group_id
-        WHERE m.user_id = ?;
-      `;
+        const groupsQuery = `
+            SELECT g.group_id, 
+                   g.group_name, 
+                   g.group_description, 
+                   g.group_image_url, 
+                   g.created_at, 
+                   (
+                     SELECT COUNT(DISTINCT m2.user_id)
+                     FROM member_of m2
+                     WHERE m2.group_id = g.group_id
+                   ) AS memberCount
+            FROM \`groups\` g
+            INNER JOIN member_of m ON g.group_id = m.group_id
+            WHERE m.user_id = ?;
+        `;
 
-      const [rows] = await db.execute(groupsQuery, [user_id]);
+        const [rows] = await db.execute(groupsQuery, [user_id]);
 
-      return rows.map(
-        (row) =>
-          new Group(
-            row.group_id,
-            row.group_name,
-            row.group_description,
-            row.group_image_url,
-            row.created_at,
-            row.memberCount, // Include member count for the relevant group
-            0, // discussionCount (can be fetched separately if needed)
-            [] // memberIds (can be fetched separately if needed)
-          )
-      );
+        return rows.map(
+            (row) =>
+                new Group(
+                    row.group_id,
+                    row.group_name,
+                    row.group_description,
+                    row.group_image_url,
+                    row.created_at,
+                    row.memberCount, // Include member count for the relevant group
+                    0, // discussionCount (can be fetched separately if needed)
+                    [] // memberIds (can be fetched separately if needed)
+                )
+        );
     } catch (error) {
-      console.error("Error in getGroupsByUserId:", error);
-      throw new Error("Failed to fetch groups for the user");
+        console.error("Error in getGroupsByUserId:", error);
+        throw new Error("Failed to fetch groups for the user");
     }
-  }
+}
 
   async getGroupById(group_id) {
     try {
@@ -101,7 +101,7 @@ class GroupService {
                  FROM member_of m2
                  WHERE m2.group_id = g.group_id
                ) AS memberCount
-        FROM groups g
+        FROM \`groups\` g
         WHERE g.group_id = ?;
       `;
 
