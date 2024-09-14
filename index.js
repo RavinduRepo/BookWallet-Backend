@@ -23,7 +23,6 @@ const trendingRoutes = require('./routes/trendingRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Import updatetrending.js to run the cron job
 require("./updatetrending");
 
 app.use(bodyParser.json());
