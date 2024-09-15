@@ -26,16 +26,7 @@ const PORT = process.env.PORT || 3000;
 require("./updatetrending");
 
 app.use(bodyParser.json());
-
-app.use("/api/auth", authRoutes);
-app.use("/api/posts", postRoutes);
-app.use("/api/image", imageRoutes);
-app.use("/api/reviews", reviewRoutes);
-app.use("/api/googleapi", googleAPIRoutes);
-app.use("/api/user", userRoutes, bookRecommendRoutes);
-app.use("/api/wishlist", wishlistRoutes);
-app.use("/api/book-review", bookReviewRoutes);
-app.use("/api/users", userfollowRoutes);
+// 30 - 38 
 app.use("/api/book", bookRoutes);
 app.use("/api", homeScreenroutes);
 app.use("/api/history", historyRoutes);
