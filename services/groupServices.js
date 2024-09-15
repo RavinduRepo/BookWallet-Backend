@@ -52,32 +52,38 @@ class GroupService {
       console.log("Fetching groups and membership status for user");
 
       const groupsQuery = `
-    SET @userId = ?;
-    SELECT g.group_id, 
-           g.group_name, 
-           g.group_description, 
-           g.group_image_url, 
-           (
-             SELECT COUNT(DISTINCT m2.user_id)
-             FROM member_of m2
-             WHERE m2.group_id = g.group_id
-           ) AS memberCount,
-           IF(m.user_id IS NOT NULL, 'member', 
-             (SELECT 'requested' 
-              FROM group_member_req r 
-              WHERE r.group_id = g.group_id 
-              AND r.user_id = @userId) 
-           ) AS membershipStatus
-    FROM \`groups\` g
-    LEFT JOIN member_of m ON g.group_id = m.group_id AND m.user_id = @userId
-    WHERE g.group_id IN (
-        SELECT m.group_id FROM member_of m WHERE m.user_id = @userId
-        UNION
-        SELECT r.group_id FROM group_member_req r WHERE r.user_id = @userId
-    );
-`;
+            SELECT g.group_id, 
+                   g.group_name, 
+                   g.group_description, 
+                   g.group_image_url, 
+                   (
+                     SELECT COUNT(DISTINCT m2.user_id)
+                     FROM member_of m2
+                     WHERE m2.group_id = g.group_id
+                   ) AS memberCount,
+                   -- Check if user is a member of the group
+                   IF(m.user_id IS NOT NULL, 'member', 
+                     -- Check if user has sent a request to join the group
+                     (SELECT 'requested' 
+                      FROM group_member_req r 
+                      WHERE r.group_id = g.group_id 
+                      AND r.user_id = ?) 
+                   ) AS membershipStatus
+            FROM \`groups\` g
+            LEFT JOIN member_of m ON g.group_id = m.group_id AND m.user_id = ?
+            WHERE g.group_id IN (
+                SELECT m.group_id FROM member_of m WHERE m.user_id = ?
+                UNION
+                SELECT r.group_id FROM group_member_req r WHERE r.user_id = ?
+            );
+        `;
 
-      const [rows] = await db.query(groupsQuery, [user_id]);
+      const [rows] = await db.execute(groupsQuery, [
+        user_id,
+        user_id,
+        user_id,
+        user_id,
+      ]);
 
       return rows.map(
         (row) =>
@@ -107,7 +113,6 @@ class GroupService {
                g.group_name, 
                g.group_description, 
                g.group_image_url, 
-               g.created_at, 
                (
                  SELECT COUNT(DISTINCT m2.user_id)
                  FROM member_of m2
@@ -129,7 +134,6 @@ class GroupService {
         row.group_name,
         row.group_description,
         row.group_image_url,
-        row.created_at,
         row.memberCount // Include member count
       );
     } catch (error) {
@@ -204,8 +208,6 @@ class GroupService {
   }
   async acceptUserRequest(group_id, user_id, admin_id) {
     try {
-      console.log("ubudeqidueqh");
-
       // First, check if the admin_id is indeed the admin of the group
       const isAdmin = await this.isAdmin(admin_id, group_id);
       if (!isAdmin) {
@@ -258,6 +260,44 @@ class GroupService {
     } catch (error) {
       console.error("Error removing user request:", error);
       throw new Error("Failed to remove user request.");
+    }
+  }
+  async sendJoinRequest(group_id, user_id) {
+    try {
+      // Insert the join request into the group_member_req table
+      const requestInsertQuery = `
+        INSERT INTO group_member_req (group_id, user_id, suggester_id)
+        VALUES (?, ?, NULL);
+      `;
+      await db.execute(requestInsertQuery, [group_id, user_id]);
+
+      return { message: "Join request sent successfully." };
+    } catch (error) {
+      console.error("Error sending join request:", error);
+      throw new Error("Failed to send join request.");
+    }
+  }
+
+  async removeJoinRequest(group_id, user_id) {
+    try {
+      // Remove the join request from the group_member_req table
+      const deleteRequestQuery = `
+        DELETE FROM group_member_req 
+        WHERE group_id = ? AND user_id = ?;
+      `;
+      const [result] = await db.execute(deleteRequestQuery, [
+        group_id,
+        user_id,
+      ]);
+
+      if (result.affectedRows === 0) {
+        throw new Error("No such request exists.");
+      }
+
+      return { message: "Join request successfully removed." };
+    } catch (error) {
+      console.error("Error removing join request:", error);
+      throw new Error("Failed to remove join request.");
     }
   }
 }

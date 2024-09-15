@@ -164,7 +164,9 @@ class GroupController {
       const token = req.headers.authorization?.split(" ")[1];
 
       if (!group_id || !user_id) {
-        return res.status(400).json({ message: "Group ID and User ID are required." });
+        return res
+          .status(400)
+          .json({ message: "Group ID and User ID are required." });
       }
 
       // Verify token and get the admin ID from the token
@@ -172,12 +174,67 @@ class GroupController {
       const admin_id = decoded.id;
 
       // Call the service to remove the user request
-      const result = await GroupService.removeUserRequest(group_id, user_id, admin_id);
+      const result = await GroupService.removeUserRequest(
+        group_id,
+        user_id,
+        admin_id
+      );
 
       res.status(200).json(result);
     } catch (error) {
       console.error("Error removing user request:", error);
-      res.status(500).json({ message: error.message || "Internal server error" });
+      res
+        .status(500)
+        .json({ message: error.message || "Internal server error" });
+    }
+  }
+  async sendJoinRequest(req, res) {
+    try {
+      const token = req.headers.authorization?.split(" ")[1]; // Extract token from headers
+      const { group_id } = req.body; // Extract group_id from the request body
+
+      // Validate input
+      if (!group_id) {
+        return res.status(400).json({ message: "Group ID is required." });
+      }
+
+      // Verify token and get user ID
+      const decoded = await authService.verifyToken(token);
+      const user_id = decoded.id;
+
+      // Call service to send the join request
+      const result = await GroupService.sendJoinRequest(group_id, user_id);
+
+      res.status(200).json(result);
+    } catch (error) {
+      console.error("Error sending join request:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async removeJoinRequest(req, res) {
+    try {
+      console.log("hi");
+
+      const token = req.headers.authorization?.split(" ")[1]; // Extract token from headers
+      const { group_id } = req.body; // Extract group_id from the request body
+
+      // Validate input
+      if (!group_id) {
+        return res.status(400).json({ message: "Group ID is required." });
+      }
+
+      // Verify token and get user ID
+      const decoded = await authService.verifyToken(token);
+      const user_id = decoded.id;
+
+      // Call the service to remove the join request
+      const result = await GroupService.removeJoinRequest(group_id, user_id);
+
+      res.status(200).json(result);
+    } catch (error) {
+      console.error("Error removing join request:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
   }
 }

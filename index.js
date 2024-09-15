@@ -19,14 +19,23 @@ const groupRoutes = require("./routes/groupRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const storeRoutes = require("./store_management/storeRoutes");
 const savedItemsRoutes = require("./routes/savedItemsRoutes");
-const trendingRoutes = require('./routes/trendingRoutes');
+const trendingRoutes = require("./routes/trendingRoutes");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 require("./updatetrending");
 
 app.use(bodyParser.json());
-// 30 - 38 
+
+app.use("/api/auth", authRoutes);
+app.use("/api/posts", postRoutes);
+app.use("/api/image", imageRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/googleapi", googleAPIRoutes);
+app.use("/api/user", userRoutes, bookRecommendRoutes);
+app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/book-review", bookReviewRoutes);
+app.use("/api/users", userfollowRoutes);
 app.use("/api/book", bookRoutes);
 app.use("/api", homeScreenroutes);
 app.use("/api/history", historyRoutes);
@@ -34,7 +43,7 @@ app.use("/api/groups", groupRoutes);
 app.use("/api/notification", notificationRoutes);
 app.use("/api/stores", storeRoutes);
 app.use("/api/saved-items", savedItemsRoutes);
-app.use('/api/trending', trendingRoutes);
+app.use("/api/trending", trendingRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

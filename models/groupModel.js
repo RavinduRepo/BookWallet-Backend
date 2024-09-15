@@ -7,7 +7,7 @@ class Group {
     memberCount = 0, // Default to 0 if not provided
     discussionCount = 0, // Default to 0 if not provided
     memberIds = [], // Default to empty array if not provided
-    membershipStatus = null // New field to track membership status
+    membershipStatus = null // Add membership status (e.g., 'member', 'requested', or null)
   ) {
     this.group_id = group_id;
     this.group_name = group_name;
@@ -16,7 +16,7 @@ class Group {
     this.memberCount = memberCount;
     this.discussionCount = discussionCount;
     this.memberIds = memberIds;
-    this.membershipStatus = membershipStatus; // Add new field for membership status
+    this.membershipStatus = membershipStatus; // New field for membership status
   }
 }
 
