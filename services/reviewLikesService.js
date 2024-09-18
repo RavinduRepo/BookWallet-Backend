@@ -32,7 +32,7 @@ const likeReview = async (reviewId, userId) => {
 
     // Insert the like
     const insertLikeSql = `
-      INSERT INTO likes (review_id, user_id, liked_date, liked_time)
+      INSERT INTO likes (review_id, user_id, date, time)
       VALUES (?, ?, ?, ?)`;
 
     // Get the current date and time
