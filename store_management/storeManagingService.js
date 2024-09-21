@@ -23,10 +23,10 @@ const shops = [
 // Example available books data
 const availableBooks = [
   { bookId: 91, storeId: 1 },
-  { bookId: 79, storeId: 2 },
+  { bookId: 117, storeId: 2 },
   { bookId: 91, storeId: 2 },
   { bookId: 33, storeId: 2 },
-  { bookId: 33, storeId: 1 },
+  { bookId: 117, storeId: 1 },
 ];
 
 // Service function to get shops by bookId
