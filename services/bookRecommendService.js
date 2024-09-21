@@ -3,65 +3,47 @@ const Book = require('../models/bookModel');
 const authService = require('../services/authService');
 const trendingpointsService = require("../services/trendingpointsService");
 
-const postRecommendBook = async (req, res) => {
-    const { bookId, recommenderId} = req.params;
-    const { token } = req.body;
-
-    if (!recommenderId || !bookId) {
-        return res.status(400).json({ message: 'Recommender ID or Book ID is required' });
-    }
-
+const recommendBook = async (bookId, recommenderId, token) => {
     try {
         const decoded = await authService.verifyToken(token);
         const userIdToken = decoded.id.toString();
-        console.log('Decoded User ID:', userIdToken);
-        console.log('Recommender ID:', recommenderId);
         if (userIdToken !== recommenderId) {
-            return res.status(403).json({ error: 'Unauthorized action' });
+            return { status: 403, error: 'Unauthorized action' };
         }
 
         const getFollowerIdQuery = `SELECT follower_id FROM user_follows WHERE followed_id = ?`;
         const [followers] = await db.execute(getFollowerIdQuery, [recommenderId]);
 
         if (followers.length === 0) {
-            return res.status(404).json({ message: 'No followers found for the given recommender ID' });
+            return { status: 404, error: 'No followers found for the given recommender ID' };
         }
-        //trending points adds if bookrecommended
-        await trendingpointsService.addTrendingPoint(bookId,40);
-        
+
+        // Add trending points when the book is recommended
+        await trendingpointsService.addTrendingPoint(bookId, 40);
+
         const insertRecommendationQuery = `INSERT INTO book_recommended (book_id, user_id, recommender_id) VALUES (?, ?, ?)`;
         const promises = followers.map(follower => {
             const userId = follower.follower_id;
             return db.execute(insertRecommendationQuery, [bookId, userId, recommenderId]);
         });
 
-        const results = await Promise.all(promises);
-
-        res.status(201).json({ message: 'Book recommended to the followers successfully'});
+        await Promise.all(promises);
+        return { status: 201 };
     } catch (error) {
-        console.error('Error book recommending:', error);
-        res.status(500).json({ message: 'Server error while recommending', error: error.message });
+        throw new Error('Error recommending book: ' + error.message);
     }
 };
 
-module.exports = { postRecommendBook };
-
-
-const getRecommendedBook = async (req, res) => {
-    const { userId } = req.params;
-
-    if (!userId) {
-        return res.status(400).json({ message: 'User ID is required' });
-    }
-
+const getRecommendedBooks = async (userId) => {
     try {
         const [rows] = await db.execute(
             `SELECT *
             FROM book
-            INNER JOIN book_recommended  ON book.book_id = book_recommended.book_id
+            INNER JOIN book_recommended ON book.book_id = book_recommended.book_id
             WHERE book_recommended.user_id = ?;`,
             [userId]
         );
+
         const books = rows.map(row => new Book(
             row.bookId,
             row.title,
@@ -76,11 +58,11 @@ const getRecommendedBook = async (req, res) => {
             row.imageUrl,
             row.resource
         ));
-        res.json(books);
+
+        return books;
     } catch (error) {
-        console.error('Error fetching books:', error); // Log the actual error
-        res.status(500).json({ error: 'Failed to fetch books' });
+        throw new Error('Error fetching recommended books: ' + error.message);
     }
 };
 
-module.exports = { postRecommendBook, getRecommendedBook }
+module.exports = { recommendBook, getRecommendedBooks };
