@@ -12,11 +12,15 @@ router.get("/:group_id", groupController.getGroupById);
 //fetch members
 router.get("/:group_id/members", groupController.getMembersByGroupId);
 //fetch group req
-router.get('/:group_id/requests', groupController.getUserRequestsByGroupId);
+router.get("/:group_id/requests", groupController.getUserRequestsByGroupId);
 // Check if the user is an admin of the group
 router.get("/:group_id/check-admin", groupController.checkAdminStatus);
 // Route for accepting a user into a group
 router.post("/accept-user", groupController.acceptUserRequest);
 // Route for removing user request
-router.post('/request/remove', groupController.removeUserRequest);
+router.post("/request/remove", groupController.removeUserRequest);
+// Remove user request
+router.post("/cancel-join-request", groupController.removeJoinRequest);
+// Send a join request to a group
+router.post("/send/join-request", groupController.sendJoinRequest);
 module.exports = router;

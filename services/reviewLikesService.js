@@ -21,10 +21,37 @@ const getUsersWhoLikedReview = async (reviewId) => {
   }
 };
 const likeReview = async (reviewId, userId) => {
-  const query = "INSERT INTO likes (review_id, user_id) VALUES (?, ?)";
-  const values = [reviewId, userId];
+  try {
+    // Check if the user exists
+    const checkUserSql = "SELECT user_id FROM user WHERE user_id = ?";
+    const [checkUserRows] = await db.query(checkUserSql, [userId]);
 
-  await db.query(query, values);
+    if (checkUserRows.length === 0) {
+      throw new Error("User does not exist.");
+    }
+
+    // Insert the like
+    const insertLikeSql = `
+      INSERT INTO likes (review_id, user_id, date, time)
+      VALUES (?, ?, ?, ?)`;
+
+    // Get the current date and time
+    const now = new Date();
+    const date = now.toISOString().split("T")[0]; // YYYY-MM-DD
+    const time = now.toTimeString().split(" ")[0]; // HH:MM:SS
+
+    const [likeResult] = await db.query(insertLikeSql, [
+      reviewId,
+      userId,
+      date,
+      time,
+    ]);
+
+    return likeResult.affectedRows > 0;
+  } catch (err) {
+    console.error("Database error in likeReview: ", err.message);
+    throw new Error("Database error: " + err.message);
+  }
 };
 
 const unlikeReview = async (reviewId, userId) => {
