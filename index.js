@@ -24,7 +24,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 require("./updatetrending");
-
+ 
 app.use(bodyParser.json());
 
 app.use("/api/auth", authRoutes);
