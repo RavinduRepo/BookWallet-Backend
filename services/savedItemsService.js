@@ -155,6 +155,58 @@ class SavedItemsService {
 
     await db.query(query, [user_id, relevant_id, date, time]);
   }
+  async removeSavedReview(user_id, relevant_id) {
+    const query = `
+      DELETE FROM saved
+      WHERE user_id = ? AND relevant_id = ? AND save_index = 0
+    `;
+    await db.query(query, [user_id, relevant_id]);
+  }
+
+  async removeSavedBook(user_id, relevant_id) {
+    const query = `
+      DELETE FROM saved
+      WHERE user_id = ? AND relevant_id = ? AND save_index = 1
+    `;
+    await db.query(query, [user_id, relevant_id]);
+  }
+
+  async removeSavedProfile(user_id, relevant_id) {
+    const query = `
+      DELETE FROM saved
+      WHERE user_id = ? AND relevant_id = ? AND save_index = 2
+    `;
+    await db.query(query, [user_id, relevant_id]);
+  }
+  async isReviewSavedByUser(user_id, relevant_id) {
+    const query = `
+      SELECT COUNT(*) AS count
+      FROM saved
+      WHERE user_id = ? AND relevant_id = ? AND save_index = 0
+    `;
+    const [rows] = await db.query(query, [user_id, relevant_id]);
+    return rows[0].count > 0; // Returns true if count > 0, false otherwise
+  }
+
+  async isBookSavedByUser(user_id, relevant_id) {
+    const query = `
+      SELECT COUNT(*) AS count
+      FROM saved
+      WHERE user_id = ? AND relevant_id = ? AND save_index = 1
+    `;
+    const [rows] = await db.query(query, [user_id, relevant_id]);
+    return rows[0].count > 0;
+  }
+
+  async isProfileSavedByUser(user_id, relevant_id) {
+    const query = `
+      SELECT COUNT(*) AS count
+      FROM saved
+      WHERE user_id = ? AND relevant_id = ? AND save_index = 2
+    `;
+    const [rows] = await db.query(query, [user_id, relevant_id]);
+    return rows[0].count > 0;
+  }
 }
 
 module.exports = new SavedItemsService();
