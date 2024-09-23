@@ -7,7 +7,6 @@ const getHomeScreen = async (userId, page) => {
     try {
         const limit = 10;
         const offset = (page - 1) * limit;
-        
         // Fetch reviews
         const query_reviews = `
             SELECT reviewed.review_id, 
@@ -39,9 +38,9 @@ const getHomeScreen = async (userId, page) => {
                      reviewed.rating, 
                      reviewed.date, 
                      user.username
-            LIMIT ? OFFSET ?`;
- 
-        const [rows_review] = await db.execute(query_reviews, [limit, offset]);
+            LIMIT ${limit} OFFSET ${offset}`;
+
+        const [rows_review] = await db.execute(query_reviews);
         const reviews = rows_review.map(row_review => new Post(
             row_review.review_id,
             row_review.book_id,
@@ -59,8 +58,8 @@ const getHomeScreen = async (userId, page) => {
         ));
         
         // Fetch books
-        const query_books = `SELECT * FROM book LIMIT ? OFFSET ?`;
-        const [rows_book] = await db.execute(query_books, [limit, offset]);
+        const query_books = `SELECT * FROM book LIMIT ${limit} OFFSET ${offset}`;
+        const [rows_book] = await db.execute(query_books);
         const books = rows_book.map(row_book => new Book(
             row_book.bookId,
             row_book.title,
@@ -116,9 +115,9 @@ const getHomeScreen = async (userId, page) => {
                          reviewed.rating, 
                          reviewed.date, 
                          user.username
-                LIMIT ? OFFSET ?`;
+                LIMIT ${limit} OFFSET ${offset}`;
             
-            const [sharedReviews2] = await db.execute(query_shareReviews2, [...sharedReviewIds, limit, offset]);
+            const [sharedReviews2] = await db.execute(query_shareReviews2, [...sharedReviewIds]);
             const shares = sharedReviews2.map(row => {
                 const shareDetails = sharedReviews1.find(share => share.review_id === row.review_id);
                 const reviews = new Post(
