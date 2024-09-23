@@ -92,6 +92,85 @@ class SavedItemsController {
       res.status(500).json({ message: error.message });
     }
   }
+  async removeSavedReview(req, res) {
+    const { token, relevant_id } = req.body;
+    try {
+      const decoded = await authService.verifyToken(token);
+      const loggedInUserId = decoded.id;
+      await savedItemsService.removeSavedReview(loggedInUserId, relevant_id);
+      res.status(200).json({ message: "Saved review successfully removed" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  async removeSavedBook(req, res) {
+    const { token, relevant_id } = req.body;
+    try {
+      const decoded = await authService.verifyToken(token);
+      const loggedInUserId = decoded.id;
+      await savedItemsService.removeSavedBook(loggedInUserId, relevant_id);
+      res.status(200).json({ message: "Saved book successfully removed" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  async removeSavedProfile(req, res) {
+    const { token, relevant_id } = req.body;
+    try {
+      const decoded = await authService.verifyToken(token);
+      const loggedInUserId = decoded.id;
+      await savedItemsService.removeSavedProfile(loggedInUserId, relevant_id);
+      res.status(200).json({ message: "Saved profile successfully removed" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+  async isReviewSaved(req, res) {
+    const { token, relevant_id } = req.body;
+    try {
+      const decoded = await authService.verifyToken(token);
+      const loggedInUserId = decoded.id;
+      const isSaved = await savedItemsService.isReviewSavedByUser(
+        loggedInUserId,
+        relevant_id
+      );
+      res.status(200).json({ isSaved });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  async isBookSaved(req, res) {
+    const { token, relevant_id } = req.body;
+    try {
+      const decoded = await authService.verifyToken(token);
+      const loggedInUserId = decoded.id;
+      const isSaved = await savedItemsService.isBookSavedByUser(
+        loggedInUserId,
+        relevant_id
+      );
+      res.status(200).json({ isSaved });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  async isProfileSaved(req, res) {
+    const { token, relevant_id } = req.body;
+    try {
+      const decoded = await authService.verifyToken(token);
+      const loggedInUserId = decoded.id;
+      const isSaved = await savedItemsService.isProfileSavedByUser(
+        loggedInUserId,
+        relevant_id
+      );
+      res.status(200).json({ isSaved });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 }
 
 module.exports = new SavedItemsController();

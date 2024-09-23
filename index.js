@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config()    ;
 const db = require("./config/dbConfig");
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -32,11 +32,12 @@ app.use("/api/posts", postRoutes);
 app.use("/api/image", imageRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/googleapi", googleAPIRoutes);
-app.use("/api/user", userRoutes, bookRecommendRoutes, userfollowRoutes);
+app.use("/api/user", userRoutes, bookRecommendRoutes);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/book-review", bookReviewRoutes);
+app.use("/api/users", userfollowRoutes);
 app.use("/api/book", bookRoutes);
-app.use("/api/home-screen", homeScreenroutes);
+app.use("/api", homeScreenroutes);
 app.use("/api/history", historyRoutes);
 app.use("/api/groups", groupRoutes);
 app.use("/api/notification", notificationRoutes);
@@ -44,6 +45,11 @@ app.use("/api/stores", storeRoutes);
 app.use("/api/saved-items", savedItemsRoutes);
 app.use("/api/trending", trendingRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+// Export the app for testing without starting the server
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
