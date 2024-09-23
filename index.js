@@ -20,7 +20,7 @@ const notificationRoutes = require("./routes/notificationRoutes");
 const storeRoutes = require("./store_management/storeRoutes");
 const savedItemsRoutes = require("./routes/savedItemsRoutes");
 const trendingRoutes = require("./routes/trendingRoutes");
-const app = express();
+const app = express(); 
 const PORT = process.env.PORT || 3000;
 
 require("./updatetrending");
