@@ -12,7 +12,7 @@ const bookStatusCheckingService = {
 
       // Query to check if the book is saved
       const [saveRows] = await db.query(
-        "SELECT COUNT(*) AS count FROM saved_books WHERE user_id = ? AND book_id = ?",
+        `SELECT COUNT(*) AS count FROM saved WHERE user_id = ? AND relevant_id = ? AND save_index = 1`,
         [userId, bookId]
       );
       const saveStatus = saveRows[0].count > 0;

@@ -11,7 +11,7 @@ router.post("/save/book", savedItemsController.insertSavedBook);
 router.post("/save/profile", savedItemsController.insertSavedProfile);
 // Removing saved items
 router.post("/reviews/remove", savedItemsController.removeSavedReview);
-router.post("/books/remove", savedItemsController.removeSavedBook);
+router.post("/remove/book", savedItemsController.removeSavedBook);
 router.post("/profiles/remove", savedItemsController.removeSavedProfile);
 // Check if an item is saved
 router.post("/reviews/is-saved", savedItemsController.isReviewSaved);

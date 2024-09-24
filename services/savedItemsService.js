@@ -189,11 +189,7 @@ class SavedItemsService {
   }
 
   async isBookSavedByUser(user_id, relevant_id) {
-    const query = `
-      SELECT COUNT(*) AS count
-      FROM saved
-      WHERE user_id = ? AND relevant_id = ? AND save_index = 1
-    `;
+    const query = `SELECT COUNT(*) AS count FROM saved WHERE user_id = ? AND relevant_id = ? AND save_index = 1`;
     const [rows] = await db.query(query, [user_id, relevant_id]);
     return rows[0].count > 0;
   }
