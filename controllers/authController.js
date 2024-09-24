@@ -42,7 +42,7 @@ const signIn = async (req, res) => {
         const user = await userService.getUserDetails(userId);
 
         if (user) {
-            res.status(200).json({ message: 'User signed in successfully', token, userId: user.user_id, username: user.username, email: user.email, imageUrl: user.imageUrl, description:user.description });
+            res.status(200).json({ message: 'User signed in successfully', token, userId: user.user_id, username: user.username, email: user.email, imageUrl: user.imageUrl, description: user.description });
         } else {
             res.status(404).json({ message: "User not found" });
         }
@@ -62,7 +62,7 @@ const handleToken = async (req, res) => {
         const user = await userService.getUserDetails(userId);
 
         if (user) {
-            res.status(200).json({ userId: user.user_id, username: user.username, email: user.email });
+            res.status(200).json({ userId: user.user_id, username: user.username, email: user.email, imageUrl: user.imageUrl, description: user.description });
         } else {
             res.status(404).json({ message: "User not found" });
         }
