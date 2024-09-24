@@ -5,7 +5,7 @@ exports.getWishlistByUserId = async (req, res) => {
         const userId = req.params.userId;
         const wishlistBooks = await wishlistService.getWishlistByUserId(userId);
         
-        console.log('Wishlist Books:', wishlistBooks); // This should now log the correct data
+        console.log('Wishlist Books:', wishlistBooks); // This should  now log the correct data
 
         if (wishlistBooks.length > 0) {
             return res.status(200).json(wishlistBooks);
