@@ -38,24 +38,20 @@ const recommendBook = async (bookId, recommenderId, token) => {
 
 const getRecommendedBooks = async (userId) => {
     try {
-        // Get all users that the current user is following
-        const getFollowedUsersQuery = `SELECT followed_id FROM user_follows WHERE follower_id = ${userId}`;
-        const [followedUsers] = await db.execute(getFollowedUsersQuery);
-
-        if (followedUsers.length === 0) {
-            return [];
-        }
-
-        const followedIds = followedUsers.map(user => user.followed_id);
-
-        // Fetch books recommended to the current user by the users they are following
+        // Fetch books recommended to the current user by the users they are following in one query
         const [rows] = await db.execute(
             `SELECT DISTINCT book.*
             FROM book
             INNER JOIN book_recommended ON book.book_id = book_recommended.book_id
-            WHERE book_recommended.user_id IN (${followedIds});`
+            INNER JOIN user_follows ON book_recommended.user_id = user_follows.followed_id
+            WHERE user_follows.follower_id = ${userId};`
         );
 
+        if (rows.length === 0) {
+            return [];
+        }
+
+        // Map the result into Book objects
         const books = rows.map(row => new Book(
             row.bookId,
             row.title,
@@ -76,5 +72,6 @@ const getRecommendedBooks = async (userId) => {
         throw new Error('Error fetching recommended books: ' + error.message);
     }
 };
+
 
 module.exports = { recommendBook, getRecommendedBooks };
