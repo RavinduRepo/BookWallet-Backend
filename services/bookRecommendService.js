@@ -11,6 +11,7 @@ const recommendBook = async (bookId, recommenderId, token) => {
             return { status: 403, error: 'Unauthorized action' };
         }
 
+        // Fetch all followers of the recommender
         const getFollowerIdQuery = `SELECT follower_id FROM user_follows WHERE followed_id = ?`;
         const [followers] = await db.execute(getFollowerIdQuery, [recommenderId]);
 
@@ -21,10 +22,11 @@ const recommendBook = async (bookId, recommenderId, token) => {
         // Add trending points when the book is recommended
         await trendingpointsService.addTrendingPoint(bookId, 40);
 
-        const insertRecommendationQuery = `INSERT INTO book_recommended (book_id, user_id, recommender_id) VALUES (?, ?, ?)`;
+        // Insert the recommendation for each follower into the `book_recommended` table
+        const insertRecommendationQuery = `INSERT INTO book_recommended (book_id, user_id) VALUES (?, ?)`;
         const promises = followers.map(follower => {
             const userId = follower.follower_id;
-            return db.execute(insertRecommendationQuery, [bookId, userId, recommenderId]);
+            return db.execute(insertRecommendationQuery, [bookId, userId]);
         });
 
         await Promise.all(promises);
@@ -36,12 +38,22 @@ const recommendBook = async (bookId, recommenderId, token) => {
 
 const getRecommendedBooks = async (userId) => {
     try {
+        // Get all users that the current user is following
+        const getFollowedUsersQuery = `SELECT followed_id FROM user_follows WHERE follower_id = ${userId}`;
+        const [followedUsers] = await db.execute(getFollowedUsersQuery);
+
+        if (followedUsers.length === 0) {
+            return [];
+        }
+
+        const followedIds = followedUsers.map(user => user.followed_id);
+
+        // Fetch books recommended to the current user by the users they are following
         const [rows] = await db.execute(
-            `SELECT *
+            `SELECT DISTINCT book.*
             FROM book
             INNER JOIN book_recommended ON book.book_id = book_recommended.book_id
-            WHERE book_recommended.user_id = ?;`,
-            [userId]
+            WHERE book_recommended.user_id IN (${followedIds});`
         );
 
         const books = rows.map(row => new Book(

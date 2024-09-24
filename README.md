@@ -10,3 +10,4 @@ The project is organized into several key folders:
 - **routes/**: Maps HTTP endpoints to the corresponding controller functions.
 - **services/**: Contains business logic that can be reused across different parts of the application.
 - **utils/**: Utility functions and modules, such as logging and validation helpers.
+    
