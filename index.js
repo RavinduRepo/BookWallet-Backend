@@ -1,6 +1,8 @@
 require("dotenv").config();
 const db = require("./config/dbConfig");
 const express = require("express");
+const swaggerUI = require('swagger-ui-express');
+const swaggerSpec = require('./swagger');
 const bodyParser = require("body-parser");
 const authRoutes = require("./routes/authRoutes");
 const postRoutes = require("./routes/postRoutes");
@@ -23,6 +25,9 @@ const trendingRoutes = require("./routes/trendingRoutes");
 const bookStatusCheckingRoutes = require("./routes/bookStatusCheckingRoutes");
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Serve Swagger documentation
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 require("./updatetrending");
 
