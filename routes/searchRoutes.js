@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { googleAPISearch } = require('../services/googleBooksAPIServices');
-const { seachUsers } = require("../services/searchService");
+const { searchUsers , searchGroups } = require("../controllers/searchController");
 
 
 router.get('/books',googleAPISearch );
-router.get('/users',seachUsers );
-router.get('/groups',googleAPISearch );
+router.get('/users',searchUsers );
+router.get('/groups',searchGroups );
 module.exports = router;
