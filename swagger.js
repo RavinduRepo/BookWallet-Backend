@@ -5,7 +5,7 @@ const swaggerDefinition = {
     info: {
         title: 'BookWallet',
         version: '1.0.0',
-        description: 'BookWallet'
+        description: 'BookWallet API documnentation'
     },
 };
 
