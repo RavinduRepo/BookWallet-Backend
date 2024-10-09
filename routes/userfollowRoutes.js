@@ -6,17 +6,6 @@ const {
   checkIfFollowingController,
 } = require("../controllers/userfollowController");
 
-// Follow a user
-router.post("/follow", followUserController);
-
-// Unfollow a user
-router.post("/unfollow", unfollowUserController);
-
-// Route to check if a user is following another user
-router.get("/check-follow", checkIfFollowingController);
-
-module.exports = router;
-
 /**
  * @swagger
  * tags:
@@ -59,7 +48,12 @@ module.exports = router;
  *              description: Failed to follow user
  *          500:
  *              description: Server error
- * 
+ */
+
+// Follow a user
+router.post("/follow", followUserController);
+
+/** 
  * /api/user/unfollow:
  *  post:
  *      summary: Unfollow a user
@@ -93,6 +87,12 @@ module.exports = router;
  *              description: Failed to unfollow user
  *          500:
  *              description: Server error
+*/
+
+// Unfollow a user
+router.post("/unfollow", unfollowUserController);
+
+/**
  * 
  * /api/user/check-follow:
  *  get:
@@ -119,3 +119,8 @@ module.exports = router;
  *          500:
  *              description: Server error
  */
+
+// Route to check if a user is following another user
+router.get("/check-follow", checkIfFollowingController);
+
+module.exports = router;
