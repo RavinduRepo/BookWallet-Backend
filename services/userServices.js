@@ -38,8 +38,6 @@ const getUserProfile = async (userId, loggedInUserId) => {
         )
     );
 
-    console.log(userprofile);
-
     // Check if userId is different from loggedInUserId
     if (userId !== loggedInUserId) {
       // Get current date and time from the server
@@ -63,4 +61,4 @@ const getUserProfile = async (userId, loggedInUserId) => {
   }
 };
 
-module.exports = { getUserDetails, getUserProfile };
+module.exports = { getUserProfile, getUserDetails };
