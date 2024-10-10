@@ -67,7 +67,7 @@ const getReviewWithUserId = async (req, res) => {
     }
 
     const posts = await reviewService.getReviewWithUserId(userId);
-
+    console.log(posts);
     if (posts.length === 0) {
       return res.status(404).json({ message: "Review not found" });
     }
