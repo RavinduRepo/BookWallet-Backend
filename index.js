@@ -7,7 +7,6 @@ const basicAuth = require('basic-auth-connect');
 const bodyParser = require("body-parser");
 const authRoutes = require("./routes/authRoutes");
 const postRoutes = require("./routes/postRoutes");
-const imageRoutes = require("./routes/imageRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const seachRoutes = require("./routes/searchRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -36,7 +35,6 @@ app.use(bodyParser.json());
 
 app.use("/api/auth", authRoutes); // 4 Ravindu
 app.use("/api/posts", postRoutes); // 1 Ravindu
-app.use("/api/image", imageRoutes); // 2 Kushan
 app.use("/api/reviews", reviewRoutes); // 21 Akash
 app.use("/api/search", seachRoutes); // 3 Ravindu
 app.use("/api/user", userRoutes, bookRecommendRoutes, userfollowRoutes); // 11 Kushan
