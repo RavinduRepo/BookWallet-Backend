@@ -20,7 +20,6 @@ async function updateTrendingBooks() {
   }
 }
 
-
 async function updateTimeIndexAndCleanUp() {
   try {
     const connection = await pool.getConnection();
@@ -33,7 +32,24 @@ async function updateTimeIndexAndCleanUp() {
   }
 }
 
+// Function to execute the routine
+async function updateTotalBookRating() {
+  try {
+    // Get a connection from the pool
+    const connection = await pool.getConnection();
 
+    // Call the stored procedure to update total book ratings
+    const sql = 'CALL UpdateTotalBookRating()'; // Stored procedure that updates total book ratings
+    await connection.query(sql);
+
+    // Release the connection back to the pool
+    connection.release();
+
+    console.log('Total book ratings updated successfully.');
+  } catch (error) {
+    console.error('Error updating total book ratings:', error);
+  }
+}
 
 // Schedule the task to run every minute (for testing)
 cron.schedule('* * * * *', () => {
@@ -46,9 +62,20 @@ cron.schedule('0 0 * * *', () => {
   updateTimeIndexAndCleanUp();
 });
 
-// add this to run s per day
+// Schedule the task to run every minute for testing
+cron.schedule('* * * * *', () => {
+  console.log('Running the total book ratings update task...');
+  updateTotalBookRating();
+});
 
+// add this to run s per day
 // cron.schedule('0 0 * * *', () => {
 //   console.log('Running the trending books update task...');
 //   updateTrendingBooks();
+// });
+
+// // Schedule the task to run daily at midnight (00:00) or as needed
+// cron.schedule('0 0 * * *', () => {
+//   console.log('Running the total book ratings update task...');
+//   updateTotalBookRating();
 // });
