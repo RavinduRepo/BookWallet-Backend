@@ -27,7 +27,7 @@ const bookStatusCheckingRoutes = require("./routes/bookStatusCheckingRoutes");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve Swagger documentation
+// Serve Swagger documentation // Udsername     // Password
 app.use('/api-docs',basicAuth('BookwalletDoc', 'BookWalletDocP@ssw0rd'), swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 require("./updatetrending");
