@@ -107,14 +107,14 @@ module.exports = swaggerSpec;
  *                  type: string
  *                  description: The resource from which the book details were obtained
  *          example:
- *              bookId: 12
+ *              bookId: 35
  *              title: The Winds of Dune
  *              ISBN10: 184737848X
  *              ISBN13: "9781847378484"
  *              publication_date: 2009-10-01
  *              description: Between the end of Frank Herbert's DUNE and his next book...
  *              author: Kevin J. Anderson, Brian Herbert
- *              rating: 4.5
+ *              rating: 4.1
  *              pages: 592
  *              genre: Fiction
  *              imageUrl: http://books.google.com/books/content?id=BpgkiOdga...
