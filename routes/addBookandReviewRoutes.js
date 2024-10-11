@@ -3,15 +3,6 @@ const router = express.Router();
 const addBookAndReviewController = require("../controllers/addBookandReveiwController");
 const validateBookReview = require("../middlewares/addBookadnReviewMiddleware");
 
-// Add book, review both, or review only if book exists
-router.post(
-  "/add",
-  validateBookReview,
-  addBookAndReviewController.addBookAndReviewController
-);
-
-module.exports = router;
-
 /**
  * @swagger
  * tags:
@@ -118,3 +109,8 @@ module.exports = router;
  *       500:
  *         description: Database error
  */
+
+// Add book, review both, or review only if book exists
+router.post("/add", validateBookReview, addBookAndReviewController.addBookAndReviewController);
+
+module.exports = router;
