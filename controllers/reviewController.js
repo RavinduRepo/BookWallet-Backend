@@ -93,8 +93,7 @@ const getReviewWithUserId = async (req, res) => {
 
     // Fetch reviews posted by the user from the review service
     const posts = await reviewService.getReviewWithUserId(userId);
-
-    // If no reviews are found, return a 404 error
+    console.log(posts);
     if (posts.length === 0) {
       return res.status(404).json({ message: "Review not found" });
     }

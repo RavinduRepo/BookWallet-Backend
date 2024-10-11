@@ -2,11 +2,6 @@ const express = require("express");
 const router = express.Router();
 const storeController = require("../store_management/storeManagingController");
 
-// Route to get shops by bookId
-router.get("/book/:bookId", storeController.getShopsByBookId);
-
-module.exports = router;
-
 /**
  * @swagger
  * tags:
@@ -44,3 +39,8 @@ module.exports = router;
  *       500:
  *         description: Server error
  */
+
+// Route to get shops by bookId
+router.get("/book/:bookId", storeController.getShopsByBookId);
+
+module.exports = router;
