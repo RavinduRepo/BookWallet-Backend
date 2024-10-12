@@ -13,7 +13,7 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME, // Name of the database to use
 
   // Un-comment to connect to Google cloud SQL database ....................
-  ssl: {
+  ssl: { 
     key: fs.readFileSync(process.env.DB_SSL_KEY),
     cert: fs.readFileSync(process.env.DB_SSL_CERT),
     ca: fs.readFileSync(process.env.DB_SSL_CA)
