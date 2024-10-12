@@ -4,8 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "cross-env NODE_ENV=development npx jest"
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "@google-cloud/recaptcha-enterprise": "^5.11.0",
