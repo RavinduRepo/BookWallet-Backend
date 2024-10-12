@@ -18,7 +18,7 @@ const pool = mysql.createPool({
     cert: fs.readFileSync(process.env.DB_SSL_CERT),
     ca: fs.readFileSync(process.env.DB_SSL_CA)
   }
-  // .......................................................................
+  // ....................................................................... 
 });
 
 // Export the pool to use in other parts of the application
