@@ -47,8 +47,6 @@ const searchGroups = async (req, res) => {
         // If groups are found, return them with a 200 status
         return res.status(200).json(groups);
     } catch (error) {
-        console.error("Error searching groups:", error);
-
         // Return a 500 status if any server error occurs
         return res.status(500).send({ error: "Internal server error" });
     }
