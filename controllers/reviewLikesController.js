@@ -33,7 +33,7 @@ const likeReviewController = async (req, res) => {
         .status(403)
         .json({ error: "User ID does not match the logged-in user" });
     }
-    await trendingpointsService.addTrendingPointFromReview(reviewId,5);
+    await trendingpointsService.addTrendingPointFromReview(reviewId, 5);
     await reviewLikesService.likeReview(reviewId, userId);
     res.status(200).json({ message: "Review liked successfully" });
   } catch (error) {
