@@ -34,7 +34,7 @@ require("./updatetrending");
 app.use(bodyParser.json());
 
 app.use("/api/auth", authRoutes); // 4 Ravindu
-app.use("/api/posts", postRoutes); // 1 Ravindu
+app.use("/api/posts", postRoutes); // 1 Ravindu )no use
 app.use("/api/reviews", reviewRoutes); // 21 Akash
 app.use("/api/search", seachRoutes); // 3 Ravindu
 app.use("/api/user", userRoutes, bookRecommendRoutes, userfollowRoutes); // 11 Kushan

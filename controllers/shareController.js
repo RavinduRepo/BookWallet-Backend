@@ -5,38 +5,39 @@ const trendingpointsService = require("../services/trendingpointsService");
 
 exports.shareReview = async (req, res) => {
   const { review_id, user_id } = req.body;
-  const token = req.headers.authorization?.split(' ')[1]; // Extract the token from the Authorization header
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[1];
 
-  // if (!token) {
-  //   return res.status(401).json({ message: 'Authorization token is required' });
-  // }
+  if (!token) {
+    console.log('Authorization token missing');
+    return res.status(401).json({ message: 'Authorization token is required' });
+  }
 
   try {
-    // Decode and verify the token
+    console.log(`Token retrieved: ${token}`);
     const decoded = await authService.verifyToken(token);
     const tokenUserId = decoded.id.toString();
+    
+    if (tokenUserId !== user_id.toString()) {
+      console.log('Unauthorized action: token user ID does not match request user ID');
+      return res.status(403).json({ message: 'Unauthorized action' });
+    }
 
-    // Check if the token user ID matches the user ID from the request
-    // if (tokenUserId !== user_id) {
-    //   return res.status(403).json({ message: 'Unauthorized action' });
-    // }
-
-    // Check if the review has already been shared by the user
     const existingShare = await shareService.findShare(review_id, user_id);
     if (existingShare) {
-      // If the review was already shared, remove the share record
       await shareService.removeShare(review_id, user_id);
-      res.status(200).json({ message: 'Review share removed successfully' });
+      return res.status(200).json({ message: 'Review share removed successfully' });
     } else {
-      await trendingpointsService.addTrendingPointFromReview(review_id,5);
-      // If the review was not shared before, create a new share record
+      await trendingpointsService.addTrendingPointFromReview(review_id, 5);
       await shareService.createShare(review_id, user_id);
-      res.status(200).json({ message: 'Review shared successfully' });
+      return res.status(200).json({ message: 'Review shared successfully' });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Failed to share or remove review', details: error.message });
+    console.error('Error in shareReview:', error.message);
+    return res.status(500).json({ error: 'Failed to share or remove review', details: error.message });
   }
 };
+
 exports.checkIfShared = async (req, res) => {
   const { review_id, user_id } = req.body;
 
