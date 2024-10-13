@@ -2,19 +2,13 @@ const express = require('express');
 const router = express.Router();
 const { postRecommendBook, getRecommendedBook } = require('../controllers/bookRecommendController');
 
-/**
- * @swagger
- * tags:
- *  name: Book Recommend
- *  description: The book recommend managing API
- */
 
 /**
  * @swagger
  * /api/user/followers/recommendedBooks/{bookId}/{recommenderId}:
  *  post:
  *      summary: Post recommended book to followers
- *      tags: [Book Recommend]
+ *      tags: [User]
  *      parameters:
  *          - in: path
  *            name: bookId
@@ -51,11 +45,11 @@ const { postRecommendBook, getRecommendedBook } = require('../controllers/bookRe
 router.post('/followers/recommendedBooks/:bookId/:recommenderId', postRecommendBook);
 
 /**
-* 
+* @swagger
 * /api/user/recommendedBooks/{userId}:
 *  get:
 *      summary: get recommended books of the user
-*      tags: [Book Recommend]
+*      tags: [User]
 *      parameters:
 *          - in: path
 *            name: userId

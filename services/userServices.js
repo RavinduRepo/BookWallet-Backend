@@ -24,7 +24,7 @@ const getUserProfile = async (userId, loggedInUserId) => {
     const [rows] = await db.execute(sql, [userId]);
 
     if (rows.length === 0) {
-      return null;
+      return [];
     }
 
     const userprofile = rows.map(
