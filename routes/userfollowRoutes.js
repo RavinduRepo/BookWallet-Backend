@@ -6,19 +6,13 @@ const {
   checkIfFollowingController,
 } = require("../controllers/userfollowController");
 
-/**
- * @swagger
- * tags:
- *  name: User Follow
- *  description: The user follow managing API
- */
 
 /**
  * @swagger
  * /api/user/follow:
  *  post:
  *      summary: Follow a user
- *      tags: [User Follow]
+ *      tags: [User]
  *      requestBody:
  *          required: true
  *          content:
@@ -54,10 +48,11 @@ const {
 router.post("/follow", followUserController);
 
 /** 
+ * @swagger
  * /api/user/unfollow:
  *  post:
  *      summary: Unfollow a user
- *      tags: [User Follow]
+ *      tags: [User]
  *      requestBody:
  *          required: true
  *          content:
@@ -93,11 +88,11 @@ router.post("/follow", followUserController);
 router.post("/unfollow", unfollowUserController);
 
 /**
- * 
+ * @swagger
  * /api/user/check-follow:
  *  get:
  *      summary: Check if a user is following another user
- *      tags: [User Follow]
+ *      tags: [User]
  *      parameters:
  *          - in: query
  *            name: followerId
