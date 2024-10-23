@@ -26,29 +26,29 @@ describe("addBookRatingService", () => {
     // Expectations
     expect(result).toBe(true); // Rating should be successfully inserted/updated
     expect(db.query).toHaveBeenCalledTimes(2); // First to check user, second to insert/update rating
-    expect(db.query).toHaveBeenCalledWith(
-      "SELECT user_id FROM user WHERE user_id = ?",
-      [mockReview.user_id]
-    ); // Verify the user check query
-    expect(db.query).toHaveBeenCalledWith(
-      `INSERT INTO book_rating (user_id, book_id, rating, weight)
-       VALUES (?, ?, ?, 1)
-       ON DUPLICATE KEY UPDATE 
-          rating = VALUES(rating), 
-          weight = VALUES(weight)`,
-      [mockReview.user_id, bookId, mockReview.rating]
-    ); // Verify the rating insert/update query
+    expect(db.query).toHaveBeenNthCalledWith(1,
+        "SELECT user_id FROM user WHERE user_id = ?",
+        [mockReview.user_id]
+     );
+     expect(db.query).toHaveBeenNthCalledWith(2,
+        `INSERT INTO book_rating (user_id, book_id, rating, weight)
+         VALUES (?, ?, ?, 1)
+         ON DUPLICATE KEY UPDATE 
+            rating = VALUES(rating), 
+            weight = VALUES(weight)`,
+        [mockReview.user_id, bookId, mockReview.rating]
+     );
   });
 
   it("should throw an error if the user does not exist", async () => {
     // Mock db query to return an empty result (user does not exist)
     db.query.mockResolvedValueOnce([[]]);
-
+  
     // Call the addBookRatingService and expect it to throw
     await expect(addBookRatingService(mockReview, bookId)).rejects.toThrow(
       "User does not exist"
     );
-
+  
     // Expectations
     expect(db.query).toHaveBeenCalledTimes(1); // Only the user check query should be called
     expect(db.query).toHaveBeenCalledWith(
@@ -70,7 +70,7 @@ describe("addBookRatingService", () => {
 
     // Expectations
     expect(db.query).toHaveBeenCalledTimes(2); // Both user check and rating insert/update should be called
-    expect(db.query).toHaveBeenCalledWith(
+    expect(db.query).toHaveBeenNthCalledWith(2,
       `INSERT INTO book_rating (user_id, book_id, rating, weight)
        VALUES (?, ?, ?, 1)
        ON DUPLICATE KEY UPDATE 
