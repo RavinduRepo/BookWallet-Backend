@@ -22,8 +22,8 @@ const shops = [
 
 // Example available books data
 const availableBooks = [
-  { bookId: 91, storeId: 1 },
-  { bookId: 117, storeId: 2 },
+  { bookId: 59, storeId: 1 },
+  { bookId: 59, storeId: 2 },
   { bookId: 91, storeId: 2 },
   { bookId: 33, storeId: 2 },
   { bookId: 117, storeId: 1 },
